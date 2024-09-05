@@ -1,31 +1,31 @@
 # application-template.yml - auth-server
 
 server:
-  port: 8888  # auth-server? ?? ??
+  port: 8888  # auth-server
 
 spring:
   application:
     name: auth-server
   datasource:
-    url: jdbc:mariadb://localhost:3306/auth_db
+    url: ${MARIADB_URL}
     username: ${MARIADB_USER}
     password: ${MARIADB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update  # ??? ?? 'validate', 'create', 'create-drop' ?? ?? ??
-    show-sql: true  # ??? ???? SQL ??? ??
+      ddl-auto: update
+    show-sql: true
   security:
     jwt:
-      secret: ${JWT_SECRET:your-secret-key}
-      expiration: 3600000  # ?? ?? ?? (??? ??, 1??)
+      secret: ${JWT_SECRET}
+      expiration: 3600000  # 토큰 만료 시간 (밀리초 기준, 1시간)
 
 grpc:
   server:
-    port: 50051  # gRPC ??? ??? ?? ??
+    port: 50051  # gRPC 서버가 사용할 포트 번호
 
 logging:
   level:
-    root: INFO  # ?? ?? ??
-    org.springframework.security: DEBUG  # Spring Security ?? ?? ??? ??
+    root: INFO
+    org.springframework.security: DEBUG  # Spring Security 관련 로그 디버깅 설정
 
