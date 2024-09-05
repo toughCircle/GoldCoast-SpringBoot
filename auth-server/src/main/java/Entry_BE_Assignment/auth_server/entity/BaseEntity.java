@@ -1,4 +1,4 @@
-package Entry_BE_Assignment.auth_server.model.entity;
+package Entry_BE_Assignment.auth_server.entity;
 
 import java.time.LocalDateTime;
 
