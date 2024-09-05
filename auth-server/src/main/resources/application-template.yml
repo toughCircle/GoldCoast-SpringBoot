@@ -1,0 +1,31 @@
+# application-template.yml - auth-server
+
+server:
+  port: 8888  # auth-server? ?? ??
+
+spring:
+  application:
+    name: auth-server
+  datasource:
+    url: jdbc:mariadb://localhost:3306/auth_db
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update  # ??? ?? 'validate', 'create', 'create-drop' ?? ?? ??
+    show-sql: true  # ??? ???? SQL ??? ??
+  security:
+    jwt:
+      secret: ${JWT_SECRET:your-secret-key}
+      expiration: 3600000  # ?? ?? ?? (??? ??, 1??)
+
+grpc:
+  server:
+    port: 50051  # gRPC ??? ??? ?? ??
+
+logging:
+  level:
+    root: INFO  # ?? ?? ??
+    org.springframework.security: DEBUG  # Spring Security ?? ?? ??? ??
+
