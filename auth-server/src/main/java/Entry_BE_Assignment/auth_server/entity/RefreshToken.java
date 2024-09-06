@@ -7,8 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,18 +21,17 @@ public class RefreshToken {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	private User user;
-
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String token;
 
 	@Column(nullable = false)
 	private LocalDateTime expiryDate;
 
-	public RefreshToken(User user, String token, LocalDateTime expiryDate) {
-		this.user = user;
+	@Column(nullable = false)
+	private String username;
+
+	public RefreshToken(String username, String token, LocalDateTime expiryDate) {
+		this.username = username;
 		this.token = token;
 		this.expiryDate = expiryDate;
 	}
