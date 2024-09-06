@@ -1,5 +1,6 @@
 package Entry_BE_Assignment.auth_server.entity;
 
+import Entry_BE_Assignment.auth_server.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,10 +31,14 @@ public class User extends BaseEntity {
 	@Column(unique = true, nullable = false)
 	private String email;
 
-	public User(String username, String password, String email) {
+	@Column(nullable = false)
+	private Role role;
+
+	public User(String username, String password, String email, Role role) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
+		this.role = role;
 	}
 
 }
