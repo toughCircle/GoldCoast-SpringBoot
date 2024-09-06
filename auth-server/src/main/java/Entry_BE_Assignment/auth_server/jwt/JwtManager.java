@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import Entry_BE_Assignment.auth_server.enums.StatusCode;
+import Entry_BE_Assignment.auth_server.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
@@ -87,9 +89,8 @@ public class JwtManager {
 			Claims claims = getClaims(token);
 			return !claims.getExpiration().before(new Date());
 		} catch (ExpiredJwtException e) {
-			// 토큰 만료 시 처리 TODO 예외처리
-			// throw new TokenExpiredException("Token expired");
-			return false;
+			// 토큰 만료 시 처리
+			throw new TokenExpiredException(StatusCode.EXPIRED_ACCESS_TOKEN.getMessage());
 		} catch (Exception e) {
 			return false;
 		}
