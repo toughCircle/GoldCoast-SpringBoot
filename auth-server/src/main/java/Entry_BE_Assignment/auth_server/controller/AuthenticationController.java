@@ -31,14 +31,25 @@ public class AuthenticationController {
 				.body(BaseApiResponse.of(StatusCode.UNAUTHORIZED));
 		}
 
+		String ip = getClientIp(request);
+
 		// 필터에서 검증된 리프레시 토큰을 사용해 새로운 Access Token 생성
 		String refreshToken = request.getHeader("Refresh-Token");
-		String newAccessToken = authenticationService.refreshAccessToken(refreshToken);
+		String newAccessToken = authenticationService.refreshAccessToken(refreshToken, ip,
+			request.getHeader("User-Agent"));
 
 		// 헤더에 새로운 Access Token 추가하고 본문에 상태 코드 및 메시지 포함
 		return ResponseEntity.ok()
 			.header("Access-Token", newAccessToken)
 			.body(BaseApiResponse.of(StatusCode.TOKEN_REFRESH_SUCCESS));
+	}
+
+	public String getClientIp(HttpServletRequest request) {
+		String ip = request.getHeader("X-Forwarded-For");
+		if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();  // 프록시를 통하지 않은 경우 IP 주소
+		}
+		return ip;
 	}
 
 }

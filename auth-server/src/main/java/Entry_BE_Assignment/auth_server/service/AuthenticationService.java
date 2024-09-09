@@ -29,11 +29,11 @@ public class AuthenticationService {
 		LocalDateTime expireDate = LocalDateTime.now().plusDays(7);
 		RefreshToken token = new RefreshToken(username, refreshToken, expireDate);  // 7일간 유효
 
-		refreshTokenRepository.deleteByUsername(username);  // 기존 토큰 삭제
+		refreshTokenRepository.deleteByUsername(username);// 기존 토큰 삭제
 	}
 
-	public String refreshAccessToken(String refreshToken) {
-		if (jwtManager.isValidToken(refreshToken)) {
+	public String refreshAccessToken(String refreshToken, String currentIpAddress, String currentUserAgent) {
+		if (jwtManager.isValidateRefreshToken(refreshToken, currentIpAddress, currentUserAgent)) {
 			Long userId = jwtManager.getUserId(refreshToken);
 			User user = userRepository.findById(userId)
 				.orElseThrow(() -> new BusinessException(StatusCode.USER_NOT_FOUND));
