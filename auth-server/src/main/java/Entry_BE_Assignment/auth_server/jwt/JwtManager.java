@@ -28,12 +28,17 @@ public class JwtManager {
 
 	private static final String CLAIM_USER_NAME = "username";
 	private static final String CLAIM_ROLE = "role";
+	private static final String CLAIM_IP = "ip";
+	private static final String CLAIM_USER_AGENT = "userAgent";
 
 	private final Key secretKey;
 	private final JwtParser jwtParser;  // JWT 파싱기 모듈화
 
 	@Value("${spring.security.jwt.expiration}")
 	private long tokenValidity;
+
+	@Value("${spring.security.jwt.refresh-expiration}")
+	private long refreshTokenValidity;
 
 	public JwtManager(@Value("${spring.security.jwt.secret}") String secret) {
 		byte[] keyBytes = Base64.getDecoder().decode(secret);
@@ -54,6 +59,26 @@ public class JwtManager {
 
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + tokenValidity * 1000);
+
+		return Jwts.builder()
+			.setClaims(claims)
+			.setIssuedAt(now)
+			.setExpiration(validity)
+			.signWith(secretKey, SignatureAlgorithm.HS256)
+			.compact();
+	}
+
+	// Refresh Token 생성
+	public String generateRefreshToken(Authentication authentication, String ipAddress, String userAgent) {
+		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
+		Long userId = userDetails.getUserId();
+
+		Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
+		claims.put(CLAIM_IP, ipAddress);
+		claims.put(CLAIM_USER_AGENT, userAgent);
+
+		Date now = new Date();
+		Date validity = new Date(now.getTime() + refreshTokenValidity * 1000);  // Refresh Token의 유효 기간 설정
 
 		return Jwts.builder()
 			.setClaims(claims)
@@ -96,13 +121,34 @@ public class JwtManager {
 		}
 	}
 
+	// Refresh Token 검증
+	public boolean isValidateRefreshToken(String token, String currentIpAddress, String currentUserAgent) {
+		try {
+			Claims claims = getClaims(token);
+
+			// 토큰에 포함된 IP 주소와 현재 요청의 IP 주소 비교
+			String tokenIp = claims.get("ip", String.class);
+			String tokenUserAgent = claims.get("userAgent", String.class);
+
+			if (!tokenIp.equals(currentIpAddress) || !tokenUserAgent.equals(currentUserAgent)) {
+				log.error("토큰의 IP 또는 사용자 에이전트 정보가 일치하지 않음");
+				return false;  // IP나 사용자 에이전트 정보가 다를 경우 토큰 무효화
+			}
+
+			return true;
+		} catch (Exception e) {
+			log.error("JWT 유효성 검사 실패: {}", token, e);
+			return false;
+		}
+	}
+
 	// Http Header 에서 token 추출
 	public String resolveToken(HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");
 		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7);  // "Bearer " 접두어 제거 후 JWT 토큰 반환
 		}
-		return null;  // 토큰이 없는 경우 null 반환
+		return null;
 	}
 
 	public Authentication getAuthentication(String token, UserDetails userDetails) {
