@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import Entry_BE_Assignment.auth_server.enums.StatusCode;
-import Entry_BE_Assignment.auth_server.exception.TokenExpiredException;
+import Entry_BE_Assignment.auth_server.exception.customException.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;

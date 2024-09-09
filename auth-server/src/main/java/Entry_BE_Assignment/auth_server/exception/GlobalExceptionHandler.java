@@ -12,6 +12,12 @@ import org.springframework.web.context.request.WebRequest;
 
 import Entry_BE_Assignment.auth_server.dto.BaseApiResponse;
 import Entry_BE_Assignment.auth_server.enums.StatusCode;
+import Entry_BE_Assignment.auth_server.exception.customException.BusinessException;
+import Entry_BE_Assignment.auth_server.exception.customException.DatabaseException;
+import Entry_BE_Assignment.auth_server.exception.customException.DuplicateAccountException;
+import Entry_BE_Assignment.auth_server.exception.customException.InvalidCredentialsException;
+import Entry_BE_Assignment.auth_server.exception.customException.InvalidTokenException;
+import Entry_BE_Assignment.auth_server.exception.customException.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

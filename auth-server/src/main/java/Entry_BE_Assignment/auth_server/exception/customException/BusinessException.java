@@ -1,4 +1,4 @@
-package Entry_BE_Assignment.auth_server.exception;
+package Entry_BE_Assignment.auth_server.exception.customException;
 
 import Entry_BE_Assignment.auth_server.enums.StatusCode;
 import lombok.AllArgsConstructor;
