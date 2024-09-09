@@ -1,9 +1,13 @@
 package Entry_BE_Assignment.auth_server.exception;
 
+import static org.springframework.http.HttpStatus.*;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
 import Entry_BE_Assignment.auth_server.dto.BaseApiResponse;
@@ -13,6 +17,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+	/**
+	 * BusinessException 및 하위 커스텀 예외 클래스에서 StatusCode 내보내는 메서드
+	 **/
+	private static StatusCode getStatusCodeFromException(BusinessException e) {
+		HttpStatus httpStatus = e.getStatusCode().getHttpStatus();
+
+		// 서버 에러인 경우 stack trace
+		if (httpStatus.value() == 500) {
+			e.printStackTrace();
+		}
+
+		return e.getStatusCode();
+	}
+
+	/**
+	 * 비즈니스 로직 상 발생할 수 있는 정의한 에러인 경우
+	 * ex) 하위 커스텀 외의 비즈니스 로직 예외인 경우
+	 **/
+	@ResponseStatus(BAD_REQUEST)
+	@ExceptionHandler({BusinessException.class})
+	public BaseApiResponse<Void> handleBusinessException(BusinessException e) {
+		log.error(e.getMessage(), e);
+		return buildErrorResponse(StatusCode.BAD_REQUEST);
+	}
 
 	// 인증 실패 예외 처리
 	@ExceptionHandler(InvalidTokenException.class)
