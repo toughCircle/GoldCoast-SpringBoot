@@ -3,9 +3,12 @@ package Entry_BE_Assignment.auth_server.entity;
 import Entry_BE_Assignment.auth_server.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
+@Table(name = "users")
 public class User extends BaseEntity {
 
 	@Id
@@ -33,6 +37,7 @@ public class User extends BaseEntity {
 	private String email;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private Role role;
 
 	public static User registerUser(String username, String password, String email, Role role) {
