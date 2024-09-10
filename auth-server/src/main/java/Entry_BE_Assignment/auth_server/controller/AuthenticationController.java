@@ -5,13 +5,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Entry_BE_Assignment.auth_server.dto.BaseApiResponse;
+import Entry_BE_Assignment.auth_server.dto.UserRegisterRequest;
 import Entry_BE_Assignment.auth_server.enums.StatusCode;
 import Entry_BE_Assignment.auth_server.service.AuthenticationService;
+import Entry_BE_Assignment.auth_server.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
 
 	private final AuthenticationService authenticationService;
+	private final UserService userService;
 
 	@PostMapping("/refresh")
 	public ResponseEntity<BaseApiResponse<Void>> refreshAccessToken(HttpServletRequest request) {
@@ -50,6 +55,12 @@ public class AuthenticationController {
 			ip = request.getRemoteAddr();  // 프록시를 통하지 않은 경우 IP 주소
 		}
 		return ip;
+	}
+
+	@PostMapping("/register")
+	public BaseApiResponse<Void> registerUser(@Valid @RequestBody UserRegisterRequest request) {
+		userService.registerNewUser(request);
+		return BaseApiResponse.of(StatusCode.SIGN_UP_SUCCESS);
 	}
 
 }

@@ -10,4 +10,6 @@ import Entry_BE_Assignment.auth_server.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByUsername(String username);
+
+	Optional<User> findByEmail(String email);
 }

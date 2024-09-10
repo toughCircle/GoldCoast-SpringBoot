@@ -6,15 +6,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
 
 	@Id
@@ -27,18 +29,19 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private String password;
 
-	@Email
 	@Column(unique = true, nullable = false)
 	private String email;
 
 	@Column(nullable = false)
 	private Role role;
 
-	public User(String username, String password, String email, Role role) {
-		this.username = username;
-		this.password = password;
-		this.email = email;
-		this.role = role;
+	public static User registerUser(String username, String password, String email, Role role) {
+		return User.builder()
+			.username(username)
+			.password(password)
+			.email(email)
+			.role(role)
+			.build();
 	}
 
 }
