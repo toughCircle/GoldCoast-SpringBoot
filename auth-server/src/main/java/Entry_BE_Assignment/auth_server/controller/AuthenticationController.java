@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Entry_BE_Assignment.auth_server.dto.BaseApiResponse;
+import Entry_BE_Assignment.auth_server.dto.Tokens;
 import Entry_BE_Assignment.auth_server.dto.UserLoginRequest;
 import Entry_BE_Assignment.auth_server.dto.UserRegisterRequest;
 import Entry_BE_Assignment.auth_server.enums.StatusCode;
@@ -37,14 +38,13 @@ public class AuthenticationController {
 
 		String ip = getClientIp(request);
 
-		// 필터에서 검증된 리프레시 토큰을 사용해 새로운 Access Token 생성
 		String refreshToken = request.getHeader("Refresh-Token");
 		String newAccessToken = authenticationService.refreshAccessToken(refreshToken, ip,
 			request.getHeader("User-Agent"));
 
 		// 헤더에 새로운 Access Token 추가하고 본문에 상태 코드 및 메시지 포함
 		return ResponseEntity.ok()
-			.header("Access-Token", newAccessToken)
+			.header("Authorization", "Bearer " + newAccessToken)
 			.body(BaseApiResponse.of(StatusCode.TOKEN_REFRESH_SUCCESS));
 	}
 
@@ -63,13 +63,17 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<BaseApiResponse<Void>> login(@Valid @RequestBody UserLoginRequest request) {
-		// JWT 토큰 생성
-		String token = authenticationService.login(request);
+	public ResponseEntity<BaseApiResponse<Void>> login(@Valid @RequestBody UserLoginRequest request,
+		HttpServletRequest httpServletRequest) {
 
-		// JWT 토큰을 헤더에 추가하여 반환
+		String ip = getClientIp(httpServletRequest);
+
+		Tokens tokens = authenticationService.login(request, ip, httpServletRequest.getHeader("User-Agent"));
+
+		// Access Token과 Refresh Token을 헤더에 추가하여 반환
 		return ResponseEntity.ok()
-			.header("Authorization", "Bearer " + token)
+			.header("Authorization", "Bearer " + tokens.getAccessToken())
+			.header("Refresh-Token", tokens.getRefreshToken())
 			.body(BaseApiResponse.of(StatusCode.LOGIN_SUCCESS));
 	}
 

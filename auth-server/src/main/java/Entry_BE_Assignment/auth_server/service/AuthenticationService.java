@@ -3,6 +3,7 @@ package Entry_BE_Assignment.auth_server.service;
 import java.time.LocalDateTime;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import Entry_BE_Assignment.auth_server.dto.Tokens;
 import Entry_BE_Assignment.auth_server.dto.UserLoginRequest;
 import Entry_BE_Assignment.auth_server.dto.UserRegisterRequest;
 import Entry_BE_Assignment.auth_server.entity.RefreshToken;
@@ -81,16 +83,22 @@ public class AuthenticationService {
 			.orElseThrow(() -> new BusinessException(StatusCode.USER_NOT_FOUND));
 	}
 
-	public String login(UserLoginRequest request) {
+	public Tokens login(UserLoginRequest request, String ipAddress, String userAgent) {
 		try {
 			Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
 			);
 
-			// JWT 토큰 생성
+			// JWT Access Token 생성
 			UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-			return jwtManager.generateToken(authentication);
-		} catch (Exception e) {
+			String accessToken = jwtManager.generateToken(authentication);
+
+			// JWT Refresh Token 생성 (IP 주소, User Agent 기반)
+			String refreshToken = jwtManager.generateRefreshToken(authentication, ipAddress, userAgent);
+
+			return new Tokens(accessToken, refreshToken);
+
+		} catch (BadCredentialsException e) {
 			throw new BusinessException(StatusCode.INVALID_CREDENTIALS);
 		}
 	}
