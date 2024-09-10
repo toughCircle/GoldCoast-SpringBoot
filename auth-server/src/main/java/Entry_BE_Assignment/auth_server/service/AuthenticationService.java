@@ -78,22 +78,19 @@ public class AuthenticationService {
 
 	}
 
-	public User findUser(Long userId) {
-		return userRepository.findById(userId)
-			.orElseThrow(() -> new BusinessException(StatusCode.USER_NOT_FOUND));
-	}
-
 	public Tokens login(UserLoginRequest request, String ipAddress, String userAgent) {
 		try {
 			Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
 			);
 
+			// 인증된 사용자 정보에서 UserDetails 가져오기
+			UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+
 			// JWT Access Token 생성
-			UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
 			String accessToken = jwtManager.generateToken(authentication);
 
-			// JWT Refresh Token 생성 (IP 주소, User Agent 기반)
+			// JWT Refresh Token 생성
 			String refreshToken = jwtManager.generateRefreshToken(authentication, ipAddress, userAgent);
 
 			return new Tokens(accessToken, refreshToken);
