@@ -33,7 +33,7 @@ public class UserService {
 
 		User user = User.registerUser(
 			request.getUsername(),
-			request.getPassword(),
+			encryptedPassword,
 			request.getEmail(),
 			request.getRole());
 
