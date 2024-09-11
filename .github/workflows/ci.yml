@@ -6,11 +6,10 @@ on:
       - main
 
 jobs:
-  build:
+  build-auth-server:
     runs-on: ubuntu-latest
 
     services:
-      # 인증 서버용 DB
       db-auth:
         image: mariadb:10.5
         ports:
@@ -57,20 +56,83 @@ jobs:
         run: |
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
 
-      # Run Gradle build for Auth Server
+      # 인증 서버 빌드
       - name: Build Auth Server with Gradle
-        working-directory: auth-server  # 디렉토리 설정
+        working-directory: auth-server
         run: ./gradlew build --stacktrace
 
-      # Run tests for Auth Server
+      # 인증 서버 테스트
       - name: Run tests for Auth Server
-        working-directory: auth-server  # 디렉토리 설정
+        working-directory: auth-server
         run: ./gradlew test --stacktrace
 
-      # Upload test results for Auth Server
+      # 테스트 결과 업로드
       - name: Upload test results for Auth Server
         if: always()
         uses: actions/upload-artifact@v2
         with:
           name: auth-server-test-results
           path: auth-server/build/test-results/test
+
+  build-resource-server:
+    runs-on: ubuntu-latest
+
+    services:
+      db-resource:
+        image: mariadb:10.5
+        ports:
+          - 3308:3306
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD_RESOURCE }}
+          MYSQL_DATABASE: ${{ secrets.DB_NAME_RESOURCE }}
+          MYSQL_USER: ${{ secrets.DB_USERNAME_RESOURCE }}
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      # Checkout the repository
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      # 자원 서버 빌드
+      - name: Set up JDK 17 for Resource Server
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 빌드 권한 부여
+      - name: Grant Build Permissions
+        run: chmod +x resource-server/gradlew
+
+      # 자원 서버 의존성 캐시 설정
+      - name: Cache Gradle dependencies for Resource Server
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-resource-${{ hashFiles('resource-server/**/*.gradle*', 'resource-server/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-resource-
+
+      # 자원 서버 빌드
+      - name: Build Resource Server with Gradle
+        working-directory: resource-server
+        run: ./gradlew build --stacktrace
+
+      # 자원 서버 테스트
+      - name: Run tests for Resource Server
+        working-directory: resource-server
+        run: ./gradlew test --stacktrace
+
+      # 테스트 결과 업로드
+      - name: Upload test results for Resource Server
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: resource-server-test-results
+          path: resource-server/build/test-results/test
