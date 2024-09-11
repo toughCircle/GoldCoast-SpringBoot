@@ -56,6 +56,10 @@ jobs:
       - name: Move to Auth Server Directory
         run: cd auth-server
 
+      # 빌드 권한 부여
+      - name: Grant Build Permissions
+        run: chmod +x ./gradlew
+
       # 인증 서버 의존성 캐시 설정
       - name: Cache Gradle dependencies for Auth Server
         uses: actions/cache@v2
