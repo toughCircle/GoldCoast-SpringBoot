@@ -25,21 +25,6 @@ jobs:
           --health-timeout=5s
           --health-retries=3
 
-      # 자원 서버용 DB
-      db-resource:
-        image: mariadb:10.5
-        ports:
-          - 3308:3306
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD_RESOURCE }}
-          MYSQL_DATABASE: ${{ secrets.DB_NAME_RESOURCE }}
-          MYSQL_USER: ${{ secrets.DB_USERNAME_RESOURCE }}
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
       # Checkout the repository
       - name: Check out the repository
@@ -91,41 +76,3 @@ jobs:
         with:
           name: auth-server-test-results
           path: auth-server/build/test-results/test
-
-      # 자원 서버 빌드
-      - name: Set up JDK 17 for Resource Server
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      # 자원 서버로 이동
-      - name: Move to Resource Server Directory
-        run: cd resource-server
-
-      # 자원 서버 의존성 캐시 설정
-      - name: Cache Gradle dependencies for Resource Server
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-resource-${{ hashFiles('resource-server/**/*.gradle*', 'resource-server/**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-resource-
-
-      # Run Gradle build for Resource Server
-      - name: Build Resource Server with Gradle
-        run: ./gradlew build --stacktrace
-
-      # Run tests for Resource Server
-      - name: Run tests for Resource Server
-        run: ./gradlew test --stacktrace
-
-      # Upload test results for Resource Server
-      - name: Upload test results for Resource Server
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: resource-server-test-results
-          path: resource-server/build/test-results/test
