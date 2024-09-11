@@ -1,9 +1,9 @@
 package Entry_BE_Assignment.resource_server.enums;
 
 public enum OrderStatus {
-	ORDERED, // 주문완료
-	PAYMENT_COMPLETED, // 입금완료
-	SHIPPED, // 발송완료
-	IN_TRANSIT, // 배송중
-	DELIVERED // 배송완료
+	ORDER_PLACED,  // 주문 완료
+	PAYMENT_RECEIVED,  // 입금 완료 (구매)
+	SHIPPED,  // 발송 완료 (구매)
+	PAYMENT_SENT,  // 송금 완료 (판매)
+	RECEIVED  // 수령 완료 (판매)
 }
