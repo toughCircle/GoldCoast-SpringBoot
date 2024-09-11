@@ -12,7 +12,7 @@ import Entry_BE_Assignment.resource_server.entity.Order;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-	List<Order> findByUserId(Long userId);
+	List<Order> findByBuyerId(Long buyerId);
 
 	@Query("SELECT o FROM Order o JOIN o.orderItems oi WHERE oi.item.sellerId = :sellerId")
 	List<Order> findBySellerId(@Param("sellerId") Long sellerId);
