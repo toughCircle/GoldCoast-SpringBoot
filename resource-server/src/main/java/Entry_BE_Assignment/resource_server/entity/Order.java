@@ -1,7 +1,5 @@
 package Entry_BE_Assignment.resource_server.entity;
 
-import java.math.BigDecimal;
-
 import Entry_BE_Assignment.resource_server.enums.ItemType;
 import Entry_BE_Assignment.resource_server.enums.OrderStatus;
 import jakarta.persistence.CascadeType;
@@ -44,15 +42,15 @@ public class Order extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private ItemType itemType;
 
-	private BigDecimal quantity;
+	private double quantity;
 
-	private BigDecimal price;
+	private double price;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "address_id", referencedColumnName = "id")
 	private Address shippingAddress;
 
-	public static Order createOrder(User user, ItemType itemType, BigDecimal quantity, BigDecimal price,
+	public static Order createOrder(User user, ItemType itemType, double quantity, double price,
 		Address shippingAddress) {
 		return Order.builder()
 			.user(user)
