@@ -39,9 +39,11 @@ public class AuthenticationService {
 	@Transactional
 	public void saveRefreshToken(String username, String refreshToken) {
 		LocalDateTime expireDate = LocalDateTime.now().plusDays(7);
-		RefreshToken token = new RefreshToken(username, refreshToken, expireDate);  // 7일간 유효
 
 		refreshTokenRepository.deleteByUsername(username);// 기존 토큰 삭제
+		
+		RefreshToken token = new RefreshToken(username, refreshToken, expireDate);  // 7일간 유효
+
 	}
 
 	public String refreshAccessToken(String refreshToken, String currentIpAddress, String currentUserAgent) {
@@ -92,6 +94,8 @@ public class AuthenticationService {
 
 			// JWT Refresh Token 생성
 			String refreshToken = jwtManager.generateRefreshToken(authentication, ipAddress, userAgent);
+
+			saveRefreshToken(userDetails.getUsername(), refreshToken);
 
 			return new Tokens(accessToken, refreshToken);
 
