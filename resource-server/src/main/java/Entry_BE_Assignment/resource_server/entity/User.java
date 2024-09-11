@@ -49,6 +49,7 @@ public class User extends BaseEntity {
 	private Role userType;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@Builder.Default
 	private List<Order> orders = new ArrayList<>();
 
 	// 구매자 생성
