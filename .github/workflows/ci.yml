@@ -37,13 +37,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 인증 서버로 이동
-      - name: Move to Auth Server Directory
-        run: cd auth-server
-
       # 빌드 권한 부여
       - name: Grant Build Permissions
-        run: chmod +x ./gradlew
+        run: chmod +x auth-server/gradlew
 
       # 인증 서버 의존성 캐시 설정
       - name: Cache Gradle dependencies for Auth Server
@@ -63,10 +59,12 @@ jobs:
 
       # Run Gradle build for Auth Server
       - name: Build Auth Server with Gradle
+        working-directory: auth-server  # 디렉토리 설정
         run: ./gradlew build --stacktrace
 
       # Run tests for Auth Server
       - name: Run tests for Auth Server
+        working-directory: auth-server  # 디렉토리 설정
         run: ./gradlew test --stacktrace
 
       # Upload test results for Auth Server
