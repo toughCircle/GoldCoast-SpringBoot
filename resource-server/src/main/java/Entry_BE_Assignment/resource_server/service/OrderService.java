@@ -49,6 +49,8 @@ public class OrderService {
 		Order order = Order.createOrder(
 			userResponse.getUserId(), generateUniqueOrderNumber(), address);
 
+		orderRepository.save(order);
+
 		for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
 			Item item = itemRepository.findById(itemRequest.getItemId())
 				.orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND));

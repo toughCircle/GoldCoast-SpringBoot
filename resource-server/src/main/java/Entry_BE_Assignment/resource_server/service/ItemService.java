@@ -28,6 +28,8 @@ public class ItemService {
 		}
 
 		Item item = Item.createItem(itemRequest.getItemType(), itemRequest.getPrice(), userResponse.getUserId());
+
+		itemRepository.save(item);
 	}
 
 	// 아이템 조회 (모든 사용자 가능)
