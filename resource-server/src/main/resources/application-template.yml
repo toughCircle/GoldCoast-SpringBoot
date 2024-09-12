@@ -7,9 +7,9 @@ spring:
   application:
     name: resource-server
   datasource:
-    url: ${MARIADB_URL}
-    username: ${MARIADB_USER}
-    password: ${MARIADB_PASSWORD}
+    url: ${MARIADB_URL_RESOURCE}
+    username: ${MARIADB_USER_RESOURCE}
+    password: ${MARIADB_PASSWORD_RESOURCE}
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
@@ -19,8 +19,3 @@ spring:
 grpc:
   server:
     port: 50052  # gRPC 서버가 사용할 포트 번호
-
-logging:
-  level:
-    root: INFO  # 로그 디버깅
-    io.grpc: DEBUG  # gRPC 관련 로그 디버깅 설정
