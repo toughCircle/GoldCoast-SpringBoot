@@ -1,5 +1,6 @@
 package Entry_BE_Assignment.auth_server.dto;
 
+import Entry_BE_Assignment.auth_server.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -27,5 +28,9 @@ public class UserRegisterRequest {
 		message = "비밀번호는 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다."
 	)
 	private String password;
+
+	@Schema(description = "사용자 역할")
+	@NotEmpty(message = "사용자 역할은 필수 입력 값입니다.")
+	private Role role;
 
 }
