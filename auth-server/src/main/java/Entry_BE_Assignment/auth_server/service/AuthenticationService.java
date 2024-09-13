@@ -41,9 +41,10 @@ public class AuthenticationService {
 		LocalDateTime expireDate = LocalDateTime.now().plusDays(7);
 
 		refreshTokenRepository.deleteByUsername(username);// 기존 토큰 삭제
-		
+
 		RefreshToken token = new RefreshToken(username, refreshToken, expireDate);  // 7일간 유효
 
+		refreshTokenRepository.save(token);
 	}
 
 	public String refreshAccessToken(String refreshToken, String currentIpAddress, String currentUserAgent) {
