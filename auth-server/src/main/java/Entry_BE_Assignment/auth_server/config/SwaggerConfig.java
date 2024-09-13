@@ -1,4 +1,4 @@
-package Entry_BE_Assignment.resource_server.config;
+package Entry_BE_Assignment.auth_server.config;
 
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +16,7 @@ public class SwaggerConfig {
 			.info(new Info()
 				.title("Auth-Resource-Project API")
 				.version("1.0")
-				.description("Auth-Resource 프로젝트의 자원서버 API 문서입니다."));
+				.description("Auth-Resource 프로젝트의 인증서버 API 문서입니다."));
 	}
 
 	@Bean
