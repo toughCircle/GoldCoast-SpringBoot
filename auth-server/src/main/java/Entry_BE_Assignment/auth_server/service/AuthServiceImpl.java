@@ -23,7 +23,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase {
 
 		if (!jwtManager.isValidToken(token)) {
 			// 유효하지 않은 토큰에 대한 처리
-			responseObserver.onError(new IllegalArgumentException("Invalid token"));
+			responseObserver.onError(new BusinessException(StatusCode.INVALID_TOKEN));
 			return;
 		}
 
