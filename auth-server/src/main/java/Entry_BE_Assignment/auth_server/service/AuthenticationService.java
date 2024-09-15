@@ -18,7 +18,6 @@ import Entry_BE_Assignment.auth_server.entity.RefreshToken;
 import Entry_BE_Assignment.auth_server.entity.User;
 import Entry_BE_Assignment.auth_server.enums.StatusCode;
 import Entry_BE_Assignment.auth_server.exception.customException.BusinessException;
-import Entry_BE_Assignment.auth_server.jwt.CustomUserDetailsService;
 import Entry_BE_Assignment.auth_server.jwt.JwtManager;
 import Entry_BE_Assignment.auth_server.repository.RefreshTokenRepository;
 import Entry_BE_Assignment.auth_server.repository.UserRepository;
@@ -33,7 +32,6 @@ public class AuthenticationService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final AuthenticationManager authenticationManager;
 	private final JwtManager jwtManager;
-	private final CustomUserDetailsService userDetailsService;
 	private final PasswordEncoder passwordEncoder;
 
 	@Transactional
@@ -41,9 +39,10 @@ public class AuthenticationService {
 		LocalDateTime expireDate = LocalDateTime.now().plusDays(7);
 
 		refreshTokenRepository.deleteByUsername(username);// 기존 토큰 삭제
-		
+
 		RefreshToken token = new RefreshToken(username, refreshToken, expireDate);  // 7일간 유효
 
+		refreshTokenRepository.save(token);
 	}
 
 	public String refreshAccessToken(String refreshToken, String currentIpAddress, String currentUserAgent) {
@@ -83,7 +82,7 @@ public class AuthenticationService {
 	public Tokens login(UserLoginRequest request, String ipAddress, String userAgent) {
 		try {
 			Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+				new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
 			);
 
 			// 인증된 사용자 정보에서 UserDetails 가져오기
