@@ -53,12 +53,18 @@ public class OrderService {
 
 		for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
 			Item item = itemRepository.findById(itemRequest.getItemId())
-				.orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND));
+				.orElseThrow(() -> new BusinessException(StatusCode.ITEM_NOT_FOUND));
+
+			if (itemRequest.getQuantity().compareTo(item.getQuantity()) > 0) {
+				throw new BusinessException(StatusCode.ORDER_QUANTITY_EXCEEDED);
+			}
 
 			OrderItem orderItem = OrderItem.createOrderItem(order, item, itemRequest.getQuantity());
 			order.addOrderItem(orderItem);
-		}
 
+			// 각 상품의 수량 조정
+			item.updateItemQuantity(item.getQuantity().subtract(itemRequest.getQuantity()));
+		}
 	}
 
 	// 주문 조회
