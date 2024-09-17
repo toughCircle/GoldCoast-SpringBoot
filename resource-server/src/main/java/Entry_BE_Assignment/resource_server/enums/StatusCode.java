@@ -34,6 +34,8 @@ public enum StatusCode {
 	ORDER_QUANTITY_INVALID(HttpStatus.BAD_REQUEST, "주문 수량이 잘못되었습니다."),
 	ORDER_PRICE_INVALID(HttpStatus.BAD_REQUEST, "주문 가격이 잘못되었습니다."),
 	ORDER_ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "배송지를 찾을 수 없습니다."),
+	ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상품입니다."),
+	ORDER_QUANTITY_EXCEEDED(HttpStatus.BAD_REQUEST, "주문 수량이 판매 가능한 수량을 초과했습니다."),
 
 	/**
 	 * 500 번대 CODE (서버 에러)
