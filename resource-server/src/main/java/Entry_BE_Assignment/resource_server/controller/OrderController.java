@@ -99,8 +99,7 @@ public class OrderController implements OrderControllerDocs {
 
 		// gRPC로 인증 서버에 사용자 정보 요청
 		TokenRequest tokenRequest = TokenRequest.newBuilder().setToken(jwtToken).build();
-		UserResponse userResponse = authServiceStub.validateToken(tokenRequest);
-		return userResponse;
+		return authServiceStub.validateToken(tokenRequest);
 	}
 
 }
