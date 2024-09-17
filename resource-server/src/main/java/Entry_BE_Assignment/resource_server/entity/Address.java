@@ -1,5 +1,6 @@
 package Entry_BE_Assignment.resource_server.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,12 +27,15 @@ public class Address extends BaseEntity {
 	private Long id;
 
 	@EqualsAndHashCode.Include
+	@Column(nullable = false, length = 10)  // 우편번호는 최대 10자
 	private String zipCode;
 
 	@EqualsAndHashCode.Include
+	@Column(nullable = false, length = 255)  // 기본 주소는 최대 255자
 	private String streetAddress;
 
 	@EqualsAndHashCode.Include
+	@Column(length = 255)  // 상세 주소는 선택 사항
 	private String addressDetail;
 
 	public static Address createAddress(String zipCode, String streetAddress, String addressDetail) {

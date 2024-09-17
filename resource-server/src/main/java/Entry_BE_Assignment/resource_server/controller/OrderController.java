@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/orders")
-public class OrderController {
+public class OrderController implements OrderControllerDocs {
 
 	private final OrderService orderService;
 	private final AuthServiceGrpc.AuthServiceBlockingStub authServiceStub;  // gRPC 클라이언트
