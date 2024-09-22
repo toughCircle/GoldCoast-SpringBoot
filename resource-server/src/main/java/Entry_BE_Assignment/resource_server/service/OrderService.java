@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import Entry_BE_Assignment.resource_server.dto.AddressRequest;
 import Entry_BE_Assignment.resource_server.dto.OrderItemRequest;
 import Entry_BE_Assignment.resource_server.dto.OrderRequest;
 import Entry_BE_Assignment.resource_server.entity.Address;
@@ -21,6 +20,7 @@ import Entry_BE_Assignment.resource_server.exception.customException.BusinessExc
 import Entry_BE_Assignment.resource_server.grpc.UserResponse;
 import Entry_BE_Assignment.resource_server.repository.ItemRepository;
 import Entry_BE_Assignment.resource_server.repository.OrderRepository;
+import Entry_BE_Assignment.resource_server.validation.OrderValidator;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,35 +30,33 @@ public class OrderService {
 
 	private final OrderRepository orderRepository;
 	private final ItemRepository itemRepository;
+	private final OrderValidator orderValidator;
 
 	@Transactional
 	public void createOrder(OrderRequest orderRequest, UserResponse userResponse) {
 
 		// 구매자 권한 체크
-		if (!userResponse.getRole().equals(String.valueOf(Role.BUYER))) {
-			throw new BusinessException(StatusCode.FORBIDDEN);
-		}
+		orderValidator.validateUserRole(userResponse.getRole(), Role.BUYER);
 
-		AddressRequest addressRequest = orderRequest.getAddress();
-
+		// 주소 생성
 		Address address = Address.createAddress(
-			addressRequest.getZipCode(),
-			addressRequest.getStreetAddress(),
-			addressRequest.getAddressDetail());
+			orderRequest.getAddress().getZipCode(),
+			orderRequest.getAddress().getStreetAddress(),
+			orderRequest.getAddress().getAddressDetail());
 
-		Order order = Order.createOrder(
-			userResponse.getUserId(), generateUniqueOrderNumber(), address);
-
+		// 주문 생성
+		Order order = Order.createOrder(userResponse.getUserId(), generateUniqueOrderNumber(), address);
 		orderRepository.save(order);
 
+		// 수량 검증 및 업데이트를 모듈화하여 한 번에 처리
 		for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
 			Item item = itemRepository.findById(itemRequest.getItemId())
 				.orElseThrow(() -> new BusinessException(StatusCode.ITEM_NOT_FOUND));
 
-			if (itemRequest.getQuantity().compareTo(item.getQuantity()) > 0) {
-				throw new BusinessException(StatusCode.ORDER_QUANTITY_EXCEEDED);
-			}
+			// 모듈화된 검증 로직 사용
+			orderValidator.validateItemQuantity(itemRequest.getQuantity(), item.getQuantity());
 
+			// OrderItem 생성 및 주문에 추가
 			OrderItem orderItem = OrderItem.createOrderItem(order, item, itemRequest.getQuantity());
 			order.addOrderItem(orderItem);
 
@@ -77,36 +75,9 @@ public class OrderService {
 		Order order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new BusinessException(StatusCode.ORDER_NOT_FOUND));
 
-		// 구매자(BUYER) 상태 업데이트
-		if (userRole == Role.BUYER) {
-			if (isValidBuyerStatusUpdate(order.getStatus(), newStatus)) {
-				order.updateOrderStatus(newStatus);
-			} else {
-				throw new BusinessException(StatusCode.FORBIDDEN);
-			}
-		}
-		// 판매자(SELLER) 상태 업데이트
-		else if (userRole == Role.SELLER) {
-			if (isValidSellerStatusUpdate(order.getStatus(), newStatus)) {
-				order.updateOrderStatus(newStatus);
-			} else {
-				throw new BusinessException(StatusCode.FORBIDDEN);
-			}
-		}
+		orderValidator.validateOrderStatusTransition(order.getStatus(), newStatus, userRole);
 
 		return orderRepository.save(order);
-	}
-
-	// 구매자(BUYER)가 상태를 업데이트할 때 유효한 상태 전환인지 확인
-	private boolean isValidBuyerStatusUpdate(OrderStatus currentStatus, OrderStatus newStatus) {
-		return (currentStatus == OrderStatus.ORDER_PLACED && newStatus == OrderStatus.PAYMENT_RECEIVED)
-			|| (currentStatus == OrderStatus.PAYMENT_RECEIVED && newStatus == OrderStatus.SHIPPED);
-	}
-
-	// 판매자(SELLER)가 상태를 업데이트할 때 유효한 상태 전환인지 확인
-	private boolean isValidSellerStatusUpdate(OrderStatus currentStatus, OrderStatus newStatus) {
-		return (currentStatus == OrderStatus.ORDER_PLACED && newStatus == OrderStatus.PAYMENT_SENT)
-			|| (currentStatus == OrderStatus.PAYMENT_SENT && newStatus == OrderStatus.RECEIVED);
 	}
 
 	private String generateUniqueOrderNumber() {
