@@ -1,5 +1,6 @@
 package Entry_BE_Assignment.resource_server.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -31,6 +32,7 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final ItemRepository itemRepository;
 	private final OrderValidator orderValidator;
+	private final PriceFactory priceFactory;
 
 	@Transactional
 	public void createOrder(OrderRequest orderRequest, UserResponse userResponse) {
@@ -48,21 +50,32 @@ public class OrderService {
 		Order order = Order.createOrder(userResponse.getUserId(), generateUniqueOrderNumber(), address);
 		orderRepository.save(order);
 
-		// 수량 검증 및 업데이트를 모듈화하여 한 번에 처리
 		for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
 			Item item = itemRepository.findById(itemRequest.getItemId())
 				.orElseThrow(() -> new BusinessException(StatusCode.ITEM_NOT_FOUND));
 
-			// 모듈화된 검증 로직 사용
 			orderValidator.validateItemQuantity(itemRequest.getQuantity(), item.getQuantity());
 
-			// OrderItem 생성 및 주문에 추가
-			OrderItem orderItem = OrderItem.createOrderItem(order, item, itemRequest.getQuantity());
+			OrderItem orderItem = priceFactory.createOrderItem(order, item, itemRequest.getQuantity());
 			order.addOrderItem(orderItem);
 
-			// 각 상품의 수량 조정
+			// 각 상품의 판매 가능 수량 조정
 			item.updateItemQuantity(item.getQuantity().subtract(itemRequest.getQuantity()));
 		}
+
+		int totalPrice = calculateTotalPrice(order.getOrderItems());
+		order.updateTotalPrice(totalPrice);
+
+		orderRepository.save(order);
+	}
+
+	// 주문 총 금액 계산
+	private int calculateTotalPrice(List<OrderItem> orderItems) {
+		return orderItems.stream()
+			.map(orderItem -> new BigDecimal(
+				priceFactory.calculateTotalPrice(orderItem.getItem(), orderItem.getQuantity())))
+			.reduce(BigDecimal.ZERO, BigDecimal::add)
+			.intValueExact();
 	}
 
 	// 주문 조회
@@ -75,9 +88,18 @@ public class OrderService {
 		Order order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new BusinessException(StatusCode.ORDER_NOT_FOUND));
 
+		// 동일한 상태로의 전환을 방지
+		if (order.getStatus() == newStatus) {
+			throw new BusinessException(StatusCode.INVALID_STATUS_UPDATE);
+		}
+
+		// 상태 전환 유효성 검증
 		orderValidator.validateOrderStatusTransition(order.getStatus(), newStatus, userRole);
 
-		return orderRepository.save(order);
+		// 상태 업데이트
+		order.updateOrderStatus(newStatus);
+
+		return order;
 	}
 
 	private String generateUniqueOrderNumber() {
