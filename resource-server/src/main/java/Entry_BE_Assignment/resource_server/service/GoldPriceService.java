@@ -9,13 +9,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import Entry_BE_Assignment.resource_server.entity.GoldPrice;
+import Entry_BE_Assignment.resource_server.enums.ItemType;
 import Entry_BE_Assignment.resource_server.enums.StatusCode;
 import Entry_BE_Assignment.resource_server.exception.customException.BusinessException;
+import Entry_BE_Assignment.resource_server.repository.GoldPriceRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class GoldPriceService {
 
 	private final RestTemplate restTemplate;
+	private final GoldPriceRepository goldPriceRepository;
 
 	@Value("${api.key}")
 	private String apiKey;
@@ -87,5 +92,41 @@ public class GoldPriceService {
 			return 0;  // 에러 발생 시 기본값 반환
 		}
 	}
+
+	@Transactional
+	public void updateGoldPrice() {
+		// GoldAPI에서 현재 금 시세를 가져옴
+		String goldPriceResponse = getGoldPriceInKRW();
+
+		// 응답에서 필요한 금 시세 데이터 추출
+		int pricePerGram24k = extractPriceFromResponse(goldPriceResponse, ItemType.GOLD_24.name());
+		int pricePerGram22k = extractPriceFromResponse(goldPriceResponse, ItemType.GOLD_22.name());
+		int pricePerGram21k = extractPriceFromResponse(goldPriceResponse, ItemType.GOLD_21.name());
+		int pricePerGram18k = extractPriceFromResponse(goldPriceResponse, ItemType.GOLD_18.name());
+
+		// 각 품목별 시세 저장 또는 업데이트
+		saveGoldPrice(ItemType.GOLD_24, pricePerGram24k);
+		saveGoldPrice(ItemType.GOLD_22, pricePerGram22k);
+		saveGoldPrice(ItemType.GOLD_21, pricePerGram21k);
+		saveGoldPrice(ItemType.GOLD_18, pricePerGram18k);
+	}
+
+	public void saveGoldPrice(ItemType goldType, int pricePerGram) {
+		// 금 시세가 이미 저장되어 있는지 확인
+		GoldPrice existingGoldPrice = goldPriceRepository.findByGoldType(goldType)
+			.orElse(null);
+
+		// 기존 데이터가 없는 경우 새로 저장
+		if (existingGoldPrice == null) {
+			GoldPrice goldPrice = GoldPrice.createGoldPrice(goldType, pricePerGram);
+			goldPriceRepository.save(goldPrice);
+		} else {
+			// 기존 가격과 비교하여 다를 경우에만 업데이트
+			if (existingGoldPrice.getPrice() != pricePerGram) {
+				existingGoldPrice.updatePrice(pricePerGram);
+			}
+		}
+	}
+
 }
 
