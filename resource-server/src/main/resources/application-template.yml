@@ -16,6 +16,11 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  # 스케줄러 활성화
+  task:
+    scheduling:
+      enabled: true
+
 grpc:
   server:
     port: 50052  # gRPC 서버가 사용할 포트 번호
