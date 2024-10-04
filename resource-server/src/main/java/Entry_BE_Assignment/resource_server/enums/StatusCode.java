@@ -15,7 +15,7 @@ public enum StatusCode {
 	ORDER_SUCCESS(HttpStatus.OK, "주문이 성공적으로 처리되었습니다."),
 	ORDER_CREATED(HttpStatus.CREATED, "주문이 성공적으로 생성되었습니다."),
 	ITEM_CREATED(HttpStatus.OK, "아이템이 성공적으로 생성되었습니다."),
-	ITEM_SUCCESS(HttpStatus.OK, "주문이 성공적으로 처리되었습니다."),
+	ITEM_SUCCESS(HttpStatus.OK, "아이템이 성공적으로 처리되었습니다."),
 
 	/**
 	 * 400 번대 CODE (클라이언트 에러)
@@ -37,6 +37,12 @@ public enum StatusCode {
 	ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상품입니다."),
 	ORDER_QUANTITY_EXCEEDED(HttpStatus.BAD_REQUEST, "주문 수량이 판매 가능한 수량을 초과했습니다."),
 	INVALID_STATUS_UPDATE(HttpStatus.CONFLICT, "이미 주문의 상태가 동일합니다."),
+	CANNOT_CANCEL_SHIPPED_ORDER(HttpStatus.FORBIDDEN, "배송 중인 주문은 취소할 수 없습니다."),
+	INVALID_REFUND_REQUEST(HttpStatus.BAD_REQUEST, "현재 상태에서는 환불 요청이 불가능합니다."),
+	INVALID_RETURN_REQUEST(HttpStatus.BAD_REQUEST, "현재 상태에서는 반품 요청이 불가능합니다."),
+	ORDER_CANNOT_BE_DELETED(HttpStatus.CONFLICT, "현재 상태에서는 주문을 삭제할 수 없습니다."),
+	REFUND_REQUIRED(HttpStatus.CONFLICT, "환불 절차가 필요합니다."),
+	RETURN_OR_REFUND_REQUIRED(HttpStatus.CONFLICT, "반품 또는 환불 절차가 필요합니다."),
 
 	/**
 	 * 500 번대 CODE (서버 에러)
