@@ -1,10 +1,11 @@
 package Entry_BE_Assignment.resource_server.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import Entry_BE_Assignment.resource_server.dto.BaseApiResponse;
+import Entry_BE_Assignment.resource_server.dto.OrderDto;
 import Entry_BE_Assignment.resource_server.dto.OrderRequest;
-import Entry_BE_Assignment.resource_server.entity.Order;
 import Entry_BE_Assignment.resource_server.enums.OrderStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,7 +17,7 @@ public interface OrderControllerDocs {
 
 	@Operation(summary = "주문 생성", description = "사용자가 요청한 상품의 주문을 생성합니다.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "주문이 성공적으로 생성되었습니다."),
+		@ApiResponse(responseCode = "201", description = "주문이 성공적으로 생성되었습니다."),
 		@ApiResponse(responseCode = "400", description = "주문 수량이 판매 가능한 수량을 초과했습니다."),
 		@ApiResponse(responseCode = "403", description = "해당 요청에 대한 권한이 없습니다."),
 		@ApiResponse(responseCode = "404", description = "존재하지 않는 상품입니다.")
@@ -43,7 +44,7 @@ public interface OrderControllerDocs {
 		@ApiResponse(responseCode = "403", description = "해당 요청에 대한 권한이 없습니다."),
 		@ApiResponse(responseCode = "404", description = "해당 주문을 찾을 수 없습니다.")
 	})
-	public BaseApiResponse<Order> getOrderById(
+	public BaseApiResponse<OrderDto> getOrderById(
 		Long orderId,
 		String token);
 
@@ -52,16 +53,21 @@ public interface OrderControllerDocs {
 		@ApiResponse(responseCode = "200", description = "주문이 성공적으로 처리되었습니다."),
 		@ApiResponse(responseCode = "403", description = "해당 요청에 대한 권한이 없습니다.")
 	})
-	public BaseApiResponse<List<Order>> getAllOrders(
-		String token);
+	public BaseApiResponse<List<OrderDto>> getAllOrders(
+		String token,
+		OrderStatus status,
+		LocalDate startDate,
+		LocalDate endDate
+	);
 
-	@Operation(summary = "특정 주문 삭제", description = "특정 주문의 정보를 삭제합니다.")
+	@Operation(summary = "특정 주문 취소", description = "특정 주문을 취소합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "주문이 성공적으로 처리되었습니다."),
 		@ApiResponse(responseCode = "403", description = "해당 요청에 대한 권한이 없습니다."),
-		@ApiResponse(responseCode = "404", description = "해당 주문을 찾을 수 없습니다.")
+		@ApiResponse(responseCode = "404", description = "해당 주문을 찾을 수 없습니다."),
+		@ApiResponse(responseCode = "409", description = "환불 절차가 필요하거나 반품/환불 처리가 필요합니다.")
 	})
-	public BaseApiResponse<Void> deleteOrder(
+	public BaseApiResponse<Void> cancelOrder(
 		Long orderId,
 		String token);
 }

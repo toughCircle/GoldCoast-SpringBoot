@@ -1,8 +1,9 @@
 package Entry_BE_Assignment.resource_server.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import Entry_BE_Assignment.resource_server.dto.BaseApiResponse;
+import Entry_BE_Assignment.resource_server.dto.OrderDto;
 import Entry_BE_Assignment.resource_server.dto.OrderRequest;
 import Entry_BE_Assignment.resource_server.entity.Order;
 import Entry_BE_Assignment.resource_server.enums.OrderStatus;
@@ -61,35 +63,39 @@ public class OrderController implements OrderControllerDocs {
 
 	// 주문 조회 (ID로 조회)
 	@GetMapping("/{orderId}")
-	public BaseApiResponse<Order> getOrderById(
+	public BaseApiResponse<OrderDto> getOrderById(
 		@PathVariable Long orderId,
 		@RequestHeader("Authorization") String token) {
 
 		UserResponse userResponse = getUserResponse(token);
 
-		Order order = orderService.getOrderById(orderId, userResponse);
+		OrderDto order = orderService.getOrderById(orderId, userResponse);
 		return BaseApiResponse.of(StatusCode.ORDER_SUCCESS, order);
 	}
 
-	// 전체 주문 목록 조회 (pagination 추가 가능)
+	// 전체 주문 목록 조회
 	@GetMapping
-	public BaseApiResponse<List<Order>> getAllOrders(
-		@RequestHeader("Authorization") String token) {
+	public BaseApiResponse<List<OrderDto>> getAllOrders(
+		@RequestHeader("Authorization") String token,
+		@RequestParam(required = false) OrderStatus status,
+		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+	) {
 
 		UserResponse userResponse = getUserResponse(token);
 
-		List<Order> orders = orderService.getAllOrders(userResponse);
+		List<OrderDto> orders = orderService.getAllOrders(userResponse);
 		return BaseApiResponse.of(StatusCode.ORDER_SUCCESS, orders);
 	}
 
-	// 주문 삭제
-	@DeleteMapping("/{orderId}")
-	public BaseApiResponse<Void> deleteOrder(@PathVariable Long orderId,
+	// 주문 취소
+	@PatchMapping("/{orderId}/cancel")
+	public BaseApiResponse<Void> cancelOrder(@PathVariable Long orderId,
 		@RequestHeader("Authorization") String token) {
 
 		UserResponse userResponse = getUserResponse(token);
 
-		orderService.deleteOrder(orderId, userResponse);
+		orderService.cancelOrder(orderId, userResponse);
 		return BaseApiResponse.of(StatusCode.ORDER_SUCCESS);
 	}
 
