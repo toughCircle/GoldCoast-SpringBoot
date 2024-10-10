@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import Entry_BE_Assignment.resource_server.dto.OrderDto;
 import Entry_BE_Assignment.resource_server.dto.OrderItemRequest;
 import Entry_BE_Assignment.resource_server.dto.OrderRequest;
 import Entry_BE_Assignment.resource_server.entity.Address;
@@ -19,6 +21,7 @@ import Entry_BE_Assignment.resource_server.enums.Role;
 import Entry_BE_Assignment.resource_server.enums.StatusCode;
 import Entry_BE_Assignment.resource_server.exception.customException.BusinessException;
 import Entry_BE_Assignment.resource_server.grpc.UserResponse;
+import Entry_BE_Assignment.resource_server.repository.AddressRepository;
 import Entry_BE_Assignment.resource_server.repository.ItemRepository;
 import Entry_BE_Assignment.resource_server.repository.OrderRepository;
 import Entry_BE_Assignment.resource_server.validation.OrderValidator;
@@ -30,9 +33,14 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
+	private final AddressRepository addressRepository;
 	private final ItemRepository itemRepository;
 	private final OrderValidator orderValidator;
 	private final PriceFactory priceFactory;
+
+	private static final String ORDER_PREFIX = "ORD-";
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+	private static final int RANDOM_PART_LENGTH = 4;
 
 	@Transactional
 	public void createOrder(OrderRequest orderRequest, UserResponse userResponse) {
@@ -46,9 +54,10 @@ public class OrderService {
 			orderRequest.getAddress().getStreetAddress(),
 			orderRequest.getAddress().getAddressDetail());
 
+		addressRepository.save(address);
+
 		// 주문 생성
 		Order order = Order.createOrder(userResponse.getUserId(), generateUniqueOrderNumber(), address);
-		orderRepository.save(order);
 
 		for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
 			Item item = itemRepository.findById(itemRequest.getItemId())
@@ -88,78 +97,85 @@ public class OrderService {
 		Order order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new BusinessException(StatusCode.ORDER_NOT_FOUND));
 
-		// 동일한 상태로의 전환을 방지
 		if (order.getStatus() == newStatus) {
 			throw new BusinessException(StatusCode.INVALID_STATUS_UPDATE);
 		}
 
-		// 상태 전환 유효성 검증
 		orderValidator.validateOrderStatusTransition(order.getStatus(), newStatus, userRole);
 
-		// 상태 업데이트
 		order.updateOrderStatus(newStatus);
 
 		return order;
 	}
 
 	private String generateUniqueOrderNumber() {
-		String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-		String randomPart = String.format("%04d", (int)(Math.random() * 10000));
-		return "ORD-" + datePart + "-" + randomPart;
+		String datePart = LocalDate.now().format(DATE_FORMATTER);
+		String randomPart = String.format("%0" + RANDOM_PART_LENGTH + "d",
+			(int)(Math.random() * Math.pow(10, RANDOM_PART_LENGTH)));
+		return ORDER_PREFIX + datePart + "-" + randomPart;
 	}
 
-	public Order getOrderById(Long orderId, UserResponse userResponse) {
-		Order order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new BusinessException(StatusCode.ORDER_NOT_FOUND));
-
+	public OrderDto getOrderById(Long orderId, UserResponse userResponse) {
+		Order order = findOrderById(orderId);
 		String userId = String.valueOf(userResponse.getUserId());
 
-		// 1. 만약 주문을 생성한 본인(구매자)이라면 접근 허용
 		if (userId.equals(String.valueOf(order.getBuyerId()))) {
-			return order;
+			return OrderDto.fromEntity(order);
 		}
 
-		// 2. 주문에 포함된 아이템 중 하나라도 해당 사용자가 판매자인 경우 접근 허용
-		boolean isSellerOfAnyItem = order.getOrderItems().stream()
-			.anyMatch(orderItem -> orderItem.getItem().getSellerId().equals(Long.parseLong(userId)));
+		List<OrderItem> sellerOrderItems = order.getOrderItems().stream()
+			.filter(orderItem -> orderItem.getItem().getSellerId().equals(Long.parseLong(userId)))
+			.collect(Collectors.toList());
 
-		if (isSellerOfAnyItem) {
-			return order;
+		if (!sellerOrderItems.isEmpty()) {
+			return OrderDto.fromEntityWithSellerItems(order, sellerOrderItems);
 		}
 
-		// 3. 위 조건을 만족하지 않으면 접근 불가 예외 처리
 		throw new BusinessException(StatusCode.FORBIDDEN);
 
 	}
 
 	// 전체 주문 목록 조회 (구매자와 판매자)
-	public List<Order> getAllOrders(UserResponse userResponse) {
+	public List<OrderDto> getAllOrders(UserResponse userResponse) {
 		String userId = String.valueOf(userResponse.getUserId());
 
-		// 1. 구매자는 자신이 생성한 주문 목록 조회
 		if (userResponse.getRole().equals(String.valueOf(Role.BUYER))) {
-			return orderRepository.findByBuyerId(Long.parseLong(userId));
+			List<Order> byBuyerId = orderRepository.findByBuyerId(Long.parseLong(userId));
+			return byBuyerId.stream().map(OrderDto::fromEntity).toList();
 		}
 
-		// 2. 판매자는 자신이 등록한 아이템이 포함된 주문 목록 조회
 		if (userResponse.getRole().equals(String.valueOf(Role.SELLER))) {
-			return orderRepository.findBySellerId(Long.parseLong(userId));
+			List<Order> bySellerId = orderRepository.findBySellerId(Long.parseLong(userId));
+			return bySellerId.stream().map(OrderDto::fromEntity).toList();
 		}
 
-		// 3. 그 외의 경우는 접근 불가
 		throw new BusinessException(StatusCode.FORBIDDEN);
 	}
 
-	// 주문 삭제 (구매자만 가능)
+	// 주문 취소 (구매자만 가능)
 	@Transactional
-	public void deleteOrder(Long orderId, UserResponse userResponse) {
+	public void cancelOrder(Long orderId, UserResponse userResponse) {
 		if (!userResponse.getRole().equals(String.valueOf(Role.BUYER))) {
 			throw new BusinessException(StatusCode.FORBIDDEN);
 		}
 
-		Order order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new BusinessException(StatusCode.ORDER_NOT_FOUND));
+		Order order = findOrderById(orderId);
 
-		orderRepository.delete(order);
+		// 입금 전이라면 취소 가능
+		if (order.getStatus() == OrderStatus.ORDER_PLACED) {
+			order.updateOrderStatus(OrderStatus.ORDER_CANCELLED);
+		} else if (order.getStatus() == OrderStatus.PAYMENT_RECEIVED || order.getStatus() == OrderStatus.SHIPPED) {
+			// 입금 후부터는 환불 절차로 처리
+			throw new BusinessException(StatusCode.REFUND_REQUIRED);
+		} else {
+			// 발송 완료 이후라면 반품 및 환불 절차 진행
+			throw new BusinessException(StatusCode.RETURN_OR_REFUND_REQUIRED);
+		}
+
+	}
+
+	private Order findOrderById(Long orderId) {
+		return orderRepository.findById(orderId)
+			.orElseThrow(() -> new BusinessException(StatusCode.ORDER_NOT_FOUND));
 	}
 }

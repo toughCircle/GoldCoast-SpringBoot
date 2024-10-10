@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import Entry_BE_Assignment.resource_server.dto.ItemDto;
 import Entry_BE_Assignment.resource_server.dto.ItemRequest;
 import Entry_BE_Assignment.resource_server.entity.GoldPrice;
 import Entry_BE_Assignment.resource_server.entity.Item;
@@ -57,20 +58,22 @@ public class ItemService {
 	}
 
 	// 아이템 조회 (모든 사용자 가능)
-	public Item getItemById(Long itemId) {
-		return itemRepository.findById(itemId)
-			.orElseThrow(() -> new BusinessException(StatusCode.ITEM_SUCCESS));
+	public ItemDto getItemById(Long itemId) {
+		Item item = findItemById(itemId);
+
+		return ItemDto.fromEntity(item);
 	}
 
 	// 전체 아이템 목록 조회
-	public List<Item> getAllItems() {
-		return itemRepository.findAll();
+	public List<ItemDto> getAllItems() {
+		List<Item> items = itemRepository.findAll();
+		return items.stream().map(ItemDto::fromEntity).toList();
 	}
 
 	// 아이템 수정 (판매자만 가능)
 	@Transactional
 	public void updateItem(Long itemId, ItemRequest itemRequest, UserResponse userResponse) {
-		Item item = getItemById(itemId);
+		Item item = findItemById(itemId);
 
 		if (!item.getSellerId().equals(userResponse.getUserId())) {
 			throw new BusinessException(StatusCode.FORBIDDEN);
@@ -82,13 +85,18 @@ public class ItemService {
 	// 아이템 삭제 (판매자만 가능)
 	@Transactional
 	public void deleteItem(Long itemId, UserResponse userResponse) {
-		Item item = getItemById(itemId);
+		Item item = findItemById(itemId);
 
 		if (!item.getSellerId().equals(userResponse.getUserId())) {
 			throw new BusinessException(StatusCode.FORBIDDEN);
 		}
 
 		itemRepository.delete(item);
+	}
+
+	private Item findItemById(Long itemId) {
+		return itemRepository.findById(itemId)
+			.orElseThrow(() -> new BusinessException(StatusCode.ITEM_NOT_FOUND));
 	}
 }
 
