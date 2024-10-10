@@ -38,8 +38,8 @@ public class OrderValidator {
 
 	// 판매자의 상태 전환 유효성 확인
 	private boolean isValidSellerStatusUpdate(OrderStatus currentStatus, OrderStatus newStatus) {
-		return (currentStatus == OrderStatus.ORDER_PLACED && newStatus == OrderStatus.PAYMENT_SENT)
-			|| (currentStatus == OrderStatus.PAYMENT_SENT && newStatus == OrderStatus.RECEIVED);
+		return (currentStatus == OrderStatus.ORDER_PLACED)
+			|| (newStatus == OrderStatus.RECEIVED);
 	}
 
 	// 구매자/판매자 권한 검증
