@@ -2,9 +2,9 @@ package Entry_BE_Assignment.resource_server.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import Entry_BE_Assignment.resource_server.entity.Order;
+import Entry_BE_Assignment.resource_server.entity.OrderItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Value;
 
@@ -39,11 +39,24 @@ public class OrderDto {
 			order.getBuyerId(),
 			order.getOrderItems().stream()
 				.map(OrderItemDto::fromEntity)  // OrderItem -> OrderItemDto 변환
-				.collect(Collectors.toList()),
+				.toList(),
 			order.getStatus().name(),
 			order.getCreatedAt(),
 			AddressDto.fromEntity(order.getShippingAddress())
 		);
 	}
 
+	public static OrderDto fromEntityWithSellerItems(Order order, List<OrderItem> sellerOrderItems) {
+		return new OrderDto(
+			order.getId(),
+			order.getOrderNumber(),
+			order.getBuyerId(),
+			sellerOrderItems.stream()
+				.map(OrderItemDto::fromEntity)
+				.toList(),
+			order.getStatus().name(),
+			order.getCreatedAt(),
+			AddressDto.fromEntity(order.getShippingAddress())
+		);
+	}
 }
