@@ -33,7 +33,8 @@ public class SecurityConfig {
 					"/v3/api-docs/**",
 					"/swagger-ui.html",
 					"/api-docs/**",
-					"/webjars/**"
+					"/webjars/**",
+					"/favicon.ico"
 				).permitAll()  // Swagger UI 관련 경로에 인증 없이 접근 허용
 				.requestMatchers("/api/auth/**").permitAll()
 				.anyRequest().authenticated())

@@ -1,5 +1,7 @@
 package Entry_BE_Assignment.resource_server.entity;
 
+import java.math.BigDecimal;
+
 import Entry_BE_Assignment.resource_server.enums.ItemType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,24 +30,32 @@ public class Item {
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
-	private ItemType itemType;  // 품목 (99.9% 금, 99.99% 금)
+	private ItemType itemType;
 
 	@Column(nullable = false)
-	private int price;  // 상품 가격
+	private int priceGram;
+
+	@Column(nullable = false, precision = 10, scale = 2)
+	private BigDecimal quantity;
 
 	private Long sellerId;
 
-	public static Item createItem(ItemType itemType, int price, Long sellerId) {
-		Item item = new Item();
-		item.itemType = itemType;
-		item.price = price;
-		item.sellerId = sellerId;
-		return item;
+	public static Item createItem(ItemType itemType, int price, BigDecimal quantity, Long sellerId) {
+		return Item.builder()
+			.itemType(itemType)
+			.priceGram(price)
+			.quantity(quantity)
+			.sellerId(sellerId)
+			.build();
 	}
 
-	public void updateItem(ItemType itemType, int price) {
+	public void updateItem(ItemType itemType, BigDecimal quantity) {
 		this.itemType = itemType;
-		this.price = price;
+		this.quantity = quantity;
+	}
+
+	public void updateItemQuantity(BigDecimal quantity) {
+		this.quantity = quantity;
 	}
 
 }

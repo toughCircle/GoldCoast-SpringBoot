@@ -16,6 +16,23 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  # 스케줄러 활성화
+  task:
+    scheduling:
+      enabled: true
+
 grpc:
   server:
     port: 50052  # gRPC 서버가 사용할 포트 번호
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    display-query-params: true
+    operationsSorter: alpha
+
+api:
+  key: "YOUR_API_KEY_HERE"  # 실제 API 키
+  url: "https://www.goldapi.io/api"  # 베이스 URL

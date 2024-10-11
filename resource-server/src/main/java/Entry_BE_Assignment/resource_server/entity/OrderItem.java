@@ -1,7 +1,6 @@
 package Entry_BE_Assignment.resource_server.entity;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,24 +41,22 @@ public class OrderItem {
 	private BigDecimal quantity;  // 주문한 해당 아이템의 수량
 
 	@Column(nullable = false)
-	private int totalPrice;  // 해당 아이템의 총 가격 (수량 * 아이템 가격)
+	private int price;  // 해당 아이템의 총 가격 (수량 * 아이템 가격)
 
 	public static OrderItem createOrderItem(Order order, Item item, BigDecimal quantity) {
-		// 가격(int)을 BigDecimal로 변환
-		BigDecimal priceDecimal = new BigDecimal(item.getPrice());
-		BigDecimal totalPriceDecimal = priceDecimal.multiply(quantity).setScale(0, RoundingMode.HALF_UP);
-
-		int totalPrice = totalPriceDecimal.intValueExact();  // 정수로 변환
-		OrderItem orderItem = new OrderItem();
-		orderItem.order = order;
-		orderItem.item = item;
-		orderItem.quantity = quantity;
-		orderItem.totalPrice = totalPrice;
-		return orderItem;
+		return OrderItem.builder()
+			.order(order)
+			.item(item)
+			.quantity(quantity)
+			.build();
 	}
 
 	public void addOrder(Order order) {
 		this.order = order;
+	}
+
+	public void updatePrice(int price) {
+		this.price = price;
 	}
 
 }

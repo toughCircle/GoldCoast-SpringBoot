@@ -69,7 +69,7 @@ dependencies {
     implementation 'javax.annotation:javax.annotation-api:1.3.2'  // javax 어노테이션
 
     // Swagger 의존성
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
 
 }
 
