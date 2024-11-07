@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:latest
+    environment:
+      TZ: Asia/Jakarta
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD_AUTH}"
+      MARIADB_USER: "${DB_USERNAME_AUTH}"
+      MARIADB_PASSWORD: "${DB_PASSWORD_AUTH}"
+      MARIADB_DATABASE: "${DB_NAME_AUTH}"
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_PASSWORD_AUTH}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /home/ubuntu/mariadb_data:/var/lib/mysql
+    entrypoint:
+      sh -c "
+      echo 'CREATE DATABASE IF NOT EXISTS ${DB_NAME_AUTH};' > /docker-entrypoint-initdb.d/init.sql;
+      echo 'CREATE DATABASE IF NOT EXISTS ${DB_NAME_RESOURCE};' >> /docker-entrypoint-initdb.d/init.sql;
+      /usr/local/bin/docker-entrypoint.sh --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+
+  auth-server:
+    build: ./auth-server
+    container_name: auth-server
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mariadb://mariadb:3306/${DB_NAME_AUTH}"
+      SPRING_DATASOURCE_USERNAME: "${DB_USERNAME_AUTH}"
+      SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD_AUTH}"
+      JWT_SECRET: "${JWT_SECRET}"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+
+  resource-server:
+    build: ./resource-server
+    container_name: resource-server
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mariadb://mariadb:3306/${DB_NAME_RESOURCE}"
+      SPRING_DATASOURCE_USERNAME: "${DB_USERNAME_RESOURCE}"
+      SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD_RESOURCE}"
+      JWT_SECRET: "${JWT_SECRET}"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
