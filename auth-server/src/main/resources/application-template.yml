@@ -7,9 +7,9 @@ spring:
   application:
     name: auth-server
   datasource:
-    url: ${MARIADB_URL}
-    username: ${MARIADB_USER}
-    password: ${MARIADB_PASSWORD}
+    url: ${MARIADB_URL_AUTH}
+    username: ${MARIADB_USER_AUTH}
+    password: ${MARIADB_PASSWORD_AUTH}
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
@@ -24,9 +24,4 @@ spring:
 grpc:
   server:
     port: 50051  # gRPC 서버가 사용할 포트 번호
-
-logging:
-  level:
-    root: INFO
-    org.springframework.security: DEBUG  # Spring Security 관련 로그 디버깅 설정
 

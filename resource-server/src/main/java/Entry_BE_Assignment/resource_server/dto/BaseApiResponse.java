@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import Entry_BE_Assignment.resource_server.enums.StatusCode;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 /**
@@ -13,11 +14,22 @@ import lombok.Getter;
 @Getter
 public class BaseApiResponse<T> {
 
+	@Schema(description = "응답 데이터")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private final T data;
+
+	@Schema(description = "응답 코드", example = "200")
 	private final int code;
+
+	@Schema(description = "HTTP 상태", example = "OK")
 	private final HttpStatus status;
+
+	@Schema(description = "응답 메시지", example = "요청이 성공했습니다.")
 	private final String message;
+
+	@Schema(description = "페이지")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private PaginationLinks links;
 
 	public BaseApiResponse(HttpStatus status, String message, T data) {
 		this.code = status.value();

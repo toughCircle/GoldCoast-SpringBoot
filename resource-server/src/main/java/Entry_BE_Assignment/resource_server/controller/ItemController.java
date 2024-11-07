@@ -2,7 +2,6 @@ package Entry_BE_Assignment.resource_server.controller;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Entry_BE_Assignment.resource_server.dto.BaseApiResponse;
+import Entry_BE_Assignment.resource_server.dto.ItemDto;
 import Entry_BE_Assignment.resource_server.dto.ItemRequest;
-import Entry_BE_Assignment.resource_server.entity.Item;
 import Entry_BE_Assignment.resource_server.enums.StatusCode;
 import Entry_BE_Assignment.resource_server.grpc.AuthServiceGrpc;
 import Entry_BE_Assignment.resource_server.grpc.TokenRequest;
@@ -36,8 +35,8 @@ public class ItemController {
 	// 아이템 생성 (판매자만 가능)
 	@PostMapping
 	public BaseApiResponse<Void> createItem(
-		@RequestBody ItemRequest itemRequest,
-		@RequestHeader("Authorization") String token) {
+		@RequestHeader("Authorization") String token,
+		@RequestBody ItemRequest itemRequest) {
 
 		UserResponse userResponse = getUserResponse(token);
 		log.info(userResponse.getUsername());
@@ -47,16 +46,16 @@ public class ItemController {
 
 	// 아이템 조회 (모든 사용자 가능)
 	@GetMapping("/{itemId}")
-	public ResponseEntity<Item> getItemById(@PathVariable Long itemId) {
-		Item item = itemService.getItemById(itemId);
-		return ResponseEntity.ok(item);
+	public BaseApiResponse<ItemDto> getItemById(@PathVariable Long itemId) {
+		ItemDto item = itemService.getItemById(itemId);
+		return BaseApiResponse.of(StatusCode.ITEM_SUCCESS, item);
 	}
 
 	// 전체 아이템 목록 조회 (모든 사용자 가능)
 	@GetMapping
-	public ResponseEntity<List<Item>> getAllItems() {
-		List<Item> items = itemService.getAllItems();
-		return ResponseEntity.ok(items);
+	public BaseApiResponse<List<ItemDto>> getAllItems() {
+		List<ItemDto> items = itemService.getAllItems();
+		return BaseApiResponse.of(StatusCode.ITEM_SUCCESS, items);
 	}
 
 	// 아이템 수정 (판매자만 가능)

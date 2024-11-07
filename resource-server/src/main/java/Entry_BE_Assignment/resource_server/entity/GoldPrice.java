@@ -1,5 +1,6 @@
 package Entry_BE_Assignment.resource_server.entity;
 
+import Entry_BE_Assignment.resource_server.enums.ItemType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,27 +18,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
-@Table(name = "addresses")
-public class Address extends BaseEntity {
+@Table(name = "gold_price")
+public class GoldPrice extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, length = 5)  // 우편번호는 최대 5자
-	private String zipCode;
+	@Column(name = "gold_type", nullable = false)
+	private ItemType goldType;
 
-	@Column(nullable = false)
-	private String streetAddress;
+	@Column(name = "price", nullable = false)
+	private int price;  // 금 시세
 
-	private String addressDetail;
-
-	public static Address createAddress(String zipCode, String streetAddress, String addressDetail) {
-		return Address.builder()
-			.zipCode(zipCode)
-			.streetAddress(streetAddress)
-			.addressDetail(addressDetail)
+	public static GoldPrice createGoldPrice(ItemType goldType, int price) {
+		return GoldPrice.builder()
+			.goldType(goldType)
+			.price(price)
 			.build();
+	}
+
+	public void updatePrice(int price) {
+		this.price = price;
 	}
 
 }

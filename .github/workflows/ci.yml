@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
   build-auth-server:
@@ -69,7 +70,7 @@ jobs:
       # 테스트 결과 업로드
       - name: Upload test results for Auth Server
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: auth-server-test-results
           path: auth-server/build/test-results/test
@@ -132,7 +133,7 @@ jobs:
       # 테스트 결과 업로드
       - name: Upload test results for Resource Server
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: resource-server-test-results
           path: resource-server/build/test-results/test

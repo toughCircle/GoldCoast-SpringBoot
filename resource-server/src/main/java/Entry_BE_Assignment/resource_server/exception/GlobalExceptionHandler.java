@@ -62,6 +62,6 @@ public class GlobalExceptionHandler {
 	// 에러 응답을 빌드하는 유틸리티 메서드
 	private ResponseEntity<BaseApiResponse<Void>> buildErrorResponse(StatusCode statusCode) {
 		return ResponseEntity.status(statusCode.getHttpStatus())
-			.body(BaseApiResponse.of(statusCode.getHttpStatus()));
+			.body(BaseApiResponse.of(statusCode.getHttpStatus(), statusCode.getMessage()));
 	}
 }
