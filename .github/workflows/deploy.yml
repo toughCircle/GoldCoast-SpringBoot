@@ -49,41 +49,24 @@ jobs:
           echo "Contents of deploy/resource-server:"
           ls ./deploy/resource-server
 
-      # 배포 단계에서 리포지토리 체크아웃 추가
-      - name: Checkout repository again for deploy
-        uses: actions/checkout@v3
+      # tar 파일 생성
+      - name: Package files into deploy.tar
+        run: |
+          mkdir ../build
+          cp -TR . ../build
+          tar -cvf deploy.tar ../build
 
-      # Docker Compose 및 JAR 파일 전송
-      - name: Transfer Docker Compose file and JARs to EC2
+      # tar 파일 전송
+      - name: Transfer deploy.tar to EC2
         uses: appleboy/scp-action@v0.1.3
         with:
           username: ubuntu
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: |
-            ./deploy/auth-server/auth-server-0.0.1-SNAPSHOT.jar
-            ./deploy/resource-server/resource-server-0.0.1-SNAPSHOT.jar
-            ./docker-compose.yml
+          source: deploy.tar
           target: /home/ubuntu/app/
           strip_components: 0
           overwrite: true
-
-      # Docker 이미지 빌드 및 배포
-      - name: Login to Docker Hub
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Build and Push Docker Image for auth-server
-        working-directory: ./auth-server
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-server:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/auth-server:latest
-
-      - name: Build and Push Docker Image for resource-server
-        working-directory: ./resource-server
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/resource-server:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/resource-server:latest
 
       # EC2에서 배포 실행
       - name: Deploy Application on EC2 via SSH
