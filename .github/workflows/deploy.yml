@@ -31,6 +31,8 @@ jobs:
         run: |
           mkdir -p deploy/auth-server
           cp ./auth-server/build/libs/*.jar ./deploy/auth-server/
+          echo "Contents of deploy/auth-server:"
+          ls ./deploy/auth-server
 
       # resource-server 빌드
       - name: Grant execute permission for gradlew in resource-server
@@ -44,6 +46,8 @@ jobs:
         run: |
           mkdir -p deploy/resource-server
           cp ./resource-server/build/libs/*.jar ./deploy/resource-server/
+          echo "Contents of deploy/resource-server:"
+          ls ./deploy/resource-server
 
       # Docker Compose 및 JAR 파일 전송
       - name: Transfer Docker Compose file and JARs to EC2
