@@ -57,8 +57,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: |
-            ./deploy/auth-server/*.jar
-            ./deploy/resource-server/*.jar
+            ./deploy/auth-server/auth-server-0.0.1-SNAPSHOT.jar
+            ./deploy/resource-server/resource-server-0.0.1-SNAPSHOT.jar
             ./docker-compose.yml
           target: /home/ubuntu/app/
 
