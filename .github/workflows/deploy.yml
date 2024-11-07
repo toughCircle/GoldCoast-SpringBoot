@@ -70,7 +70,7 @@ jobs:
           source: |
             ./deploy/auth-server.jar
             ./deploy/resource-server.jar
-            ./docker-compose.yml  # docker-compose.yml 파일도 포함
+            ./docker-compose.yml
           target: "/home/ubuntu/app"
 
       - name: Install Docker Compose and Deploy on EC2
