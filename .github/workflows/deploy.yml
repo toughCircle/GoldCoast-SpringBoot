@@ -22,6 +22,7 @@ jobs:
       - name: Build auth-server
         run: |
           cd auth-server
+          chmod +x ./gradlew
           ./gradlew build
 
       - name: Upload auth-server artifact
@@ -39,6 +40,7 @@ jobs:
       - name: Build resource-server
         run: |
           cd resource-server
+          chmod +x ./gradlew
           ./gradlew build
 
       - name: Upload resource-server artifact
@@ -59,3 +61,4 @@ jobs:
             docker-compose stop
             # 새로 컨테이너 시작 및 빌드 (볼륨 유지)
             docker-compose up -d --build
+          debug: true
