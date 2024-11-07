@@ -13,27 +13,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up JDK
+      - name: Set up JDK for auth-server
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build auth-server
+        run: |
+          cd auth-server
+          ./gradlew build
 
-      - name: Upload artifact
+      - name: Upload auth-server artifact
         uses: actions/upload-artifact@v3
         with:
-          name: app
-          path: build/libs/*.jar
+          name: auth-server-app
+          path: auth-server/build/libs/*.jar
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
+      - name: Set up JDK for resource-server
+        uses: actions/setup-java@v2
         with:
-          name: app
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Deploy with Docker Compose on EC2
+      - name: Build resource-server
+        run: |
+          cd resource-server
+          ./gradlew build
+
+      - name: Upload resource-server artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: resource-server-app
+          path: resource-server/build/libs/*.jar
+
+      - name: Download artifacts and deploy with Docker Compose on EC2
         uses: appleboy/ssh-action@v0.1.3
         with:
           host: ${{ secrets.EC2_HOST }}
