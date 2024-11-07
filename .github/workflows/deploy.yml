@@ -29,8 +29,8 @@ jobs:
 
       - name: Copy auth-server JAR to deploy directory
         run: |
-          mkdir -p deploy
-          cp ./auth-server/build/libs/*.jar ./deploy/auth-server.jar
+          mkdir -p deploy/auth-server
+          cp ./auth-server/build/libs/*.jar ./deploy/auth-server/
 
       # resource-server 빌드
       - name: Grant execute permission for gradlew in resource-server
@@ -42,8 +42,8 @@ jobs:
 
       - name: Copy resource-server JAR to deploy directory
         run: |
-          mkdir -p deploy
-          cp ./resource-server/build/libs/*.jar ./deploy/resource-server.jar
+          mkdir -p deploy/resource-server
+          cp ./resource-server/build/libs/*.jar ./deploy/resource-server/
 
       # Docker Compose 및 JAR 파일 전송
       - name: Transfer Docker Compose file and JARs to EC2
@@ -53,8 +53,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: |
-            ./deploy/auth-server.jar
-            ./deploy/resource-server.jar
+            ./deploy/auth-server/*.jar
+            ./deploy/resource-server/*.jar
             ./docker-compose.yml
           target: /home/ubuntu/app/
 
