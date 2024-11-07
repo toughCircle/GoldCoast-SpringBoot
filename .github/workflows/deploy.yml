@@ -19,18 +19,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Make directory for deliverables
-        run: mkdir deploy
+      - name: Grant execute permission for gradlew in auth-server
+        run: chmod +x auth-server/gradlew
 
       - name: Build auth-server
         working-directory: ./auth-server
         run: ./gradlew clean build
 
       - name: Copy auth-server JAR to deploy directory
-        run: cp ./auth-server/build/libs/*.jar ./deploy/auth-server.jar
+        run: |
+          mkdir -p deploy
+          cp ./auth-server/build/libs/*.jar ./deploy/auth-server.jar
+
+      - name: Grant execute permission for gradlew in resource-server
+        run: chmod +x resource-server/gradlew
 
       - name: Build resource-server
         working-directory: ./resource-server
@@ -39,7 +41,7 @@ jobs:
       - name: Copy resource-server JAR to deploy directory
         run: cp ./resource-server/build/libs/*.jar ./deploy/resource-server.jar
 
-      - name: Transfer Docker Compose file to EC2
+      - name: Transfer Docker Compose file and JARs to EC2
         uses: appleboy/scp-action@master
         with:
           username: ubuntu
@@ -49,19 +51,19 @@ jobs:
             ./deploy/auth-server.jar
             ./deploy/resource-server.jar
             ./docker-compose.yml
-          target: "/home/ubuntu/app/"
+          target: /home/ubuntu/app/
 
       - name: Login to Docker Hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Build and Push Spring Boot Docker Image for auth-server
+      - name: Build and Push Docker Image for auth-server
         working-directory: ./auth-server
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-server:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/auth-server:latest
 
-      - name: Build and Push Spring Boot Docker Image for resource-server
+      - name: Build and Push Docker Image for resource-server
         working-directory: ./resource-server
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/resource-server:latest .
@@ -84,7 +86,7 @@ jobs:
             # Docker Compose 설정이 있는 디렉토리로 이동
             cd /home/ubuntu/app
 
-            # 기존 컨테이너 중지
+            # 기존 컨테이너 중지 및 제거
             docker-compose down
             
             # Docker Compose로 컨테이너 재시작
