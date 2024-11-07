@@ -23,13 +23,13 @@ jobs:
         run: ./gradlew build
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app
           path: build/libs/*.jar
 
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: app
 
@@ -45,4 +45,3 @@ jobs:
             docker-compose stop
             # 새로 컨테이너 시작 및 빌드 (볼륨 유지)
             docker-compose up -d --build
-      
