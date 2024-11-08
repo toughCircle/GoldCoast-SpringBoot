@@ -42,7 +42,7 @@ services:
 
   auth-server:
     build:
-      context: /home/ubuntu/app/deploy/auth-server  # auth-server의 Dockerfile 경로 설정
+      context: /home/ubuntu/app/deploy/auth-server
       dockerfile: Dockerfile
     container_name: auth-server
     environment:
