@@ -42,7 +42,7 @@ services:
 
   auth-server:
     build:
-      context: ./auth-server  # auth-server의 Dockerfile 경로 설정
+      context: ./deploy/auth-server  # auth-server의 Dockerfile 경로 설정
       dockerfile: Dockerfile
     container_name: auth-server
     environment:
@@ -58,7 +58,7 @@ services:
 
   resource-server:
     build:
-      context: ./resource-server  # resource-server의 Dockerfile 경로 설정
+      context: ./deploy/resource-server  # resource-server의 Dockerfile 경로 설정
       dockerfile: Dockerfile
     container_name: resource-server
     environment:
