@@ -36,14 +36,14 @@ services:
       dockerfile: Dockerfile
     container_name: auth-server
     environment:
-      DATASOURCE_URL: "jdbc:mariadb://auth-db:3306/${DB_NAME_AUTH}"
+      DATASOURCE_URL: "${MARIADB_URL_AUTH}"
       DATASOURCE_USERNAME: "${DB_USERNAME_AUTH}"
       DATASOURCE_PASSWORD: "${DB_PASSWORD_AUTH}"
       JWT_SECRET: "${JWT_SECRET}"
     depends_on:
       - auth-db
     ports:
-      - "8081:8081"
+      - "8888:8888"
 
   resource-server:
     build:
@@ -51,11 +51,11 @@ services:
       dockerfile: Dockerfile
     container_name: resource-server
     environment:
-      DATASOURCE_URL: "jdbc:mariadb://resource-db:3307/${DB_NAME_RESOURCE}"
+      DATASOURCE_URL: "${MARIADB_URL_RESOURCE}"
       DATASOURCE_USERNAME: "${DB_USERNAME_RESOURCE}"
       DATASOURCE_PASSWORD: "${DB_PASSWORD_RESOURCE}"
       JWT_SECRET: "${JWT_SECRET}"
     depends_on:
       - resource-db
     ports:
-      - "8082:8082"
+      - "9999:9999"
