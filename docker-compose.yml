@@ -12,11 +12,6 @@ services:
     restart: unless-stopped
     ports:
       - "3306:3306"
-    healthcheck:
-      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_ROOT_PASSWORD}" ]
-      interval: 60s
-      timeout: 20s
-      retries: 10
     volumes:
       - /home/ubuntu/auth_db_data:/var/lib/mysql
 
@@ -32,11 +27,6 @@ services:
     restart: unless-stopped
     ports:
       - "3307:3307"
-    healthcheck:
-      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_ROOT_PASSWORD}" ]
-      interval: 60s
-      timeout: 20s
-      retries: 10
     volumes:
       - /home/ubuntu/resource_db_data:/var/lib/mysql
 
@@ -51,14 +41,13 @@ services:
       SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD_AUTH}"
       JWT_SECRET: "${JWT_SECRET}"
     depends_on:
-      auth-db:
-        condition: service_healthy
+      - auth-db
     ports:
       - "8081:8081"
 
   resource-server:
     build:
-      context: /home/ubuntu/app/deploy/resource-server  # resource-server의 Dockerfile 경로 설정
+      context: /home/ubuntu/app/deploy/resource-server
       dockerfile: Dockerfile
     container_name: resource-server
     environment:
@@ -67,7 +56,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD_RESOURCE}"
       JWT_SECRET: "${JWT_SECRET}"
     depends_on:
-      resource-db:
-        condition: service_healthy
+      - resource-db
     ports:
       - "8082:8082"
