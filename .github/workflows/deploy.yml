@@ -44,15 +44,6 @@ jobs:
           cp ./resource-server/build/libs/*.jar ./deploy/resource-server/
           cp ./resource-server/Dockerfile ./deploy/resource-server/
 
-      - name: Copy wait-for-it.sh script
-        run: |
-          cp ./wait-for-it.sh ./deploy/auth-server/
-          cp ./wait-for-it.sh ./deploy/resource-server/
-          echo "Contents of deploy/auth-server:"
-          ls ./deploy/auth-server
-          echo "Contents of deploy/resource-server:"
-          ls ./deploy/resource-server
-
       # Docker Compose 파일 복사
       - name: Copy Docker Compose to deploy directory
         run: |
