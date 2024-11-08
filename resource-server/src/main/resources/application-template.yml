@@ -1,7 +1,5 @@
-# application-template.yml - resource-server
-
 server:
-  port: 9999  # resource-server
+  port: 9999
 
 spring:
   application:
@@ -16,14 +14,13 @@ spring:
       ddl-auto: update
     show-sql: true
 
-  # 스케줄러 활성화
   task:
     scheduling:
       enabled: true
 
 grpc:
   server:
-    port: 50052  # gRPC 서버가 사용할 포트 번호
+    port: 50052
 
 springdoc:
   api-docs:

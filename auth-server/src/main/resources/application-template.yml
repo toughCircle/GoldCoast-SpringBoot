@@ -1,7 +1,5 @@
-# application-template.yml - auth-server
-
 server:
-  port: 8888  # auth-server
+  port: 8888
 
 spring:
   application:
@@ -18,10 +16,10 @@ spring:
   security:
     jwt:
       secret: ${JWT_SECRET}
-      expiration: 3600000  # 토큰 만료 시간 (밀리초 기준, 1시간)
-      refresh-expiration: 604800000 # 리프레시 토큰 만료 시간 (밀리초 기준, 7일)
+      expiration: 3600000
+      refresh-expiration: 604800000
 
 grpc:
   server:
-    port: 50051  # gRPC 서버가 사용할 포트 번호
+    port: 50051
 
