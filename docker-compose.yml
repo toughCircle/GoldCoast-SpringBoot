@@ -42,6 +42,7 @@ services:
       JWT_SECRET: "${JWT_SECRET}"
     depends_on:
       - auth-db
+    entrypoint: [ "./wait-for-it.sh", "auth-db:3306", "--", "java", "-jar", "app.jar" ]
     ports:
       - "8888:8888"
 
@@ -57,5 +58,6 @@ services:
       JWT_SECRET: "${JWT_SECRET}"
     depends_on:
       - resource-db
+    entrypoint: [ "./wait-for-it.sh", "resource-db:3307", "--", "java", "-jar", "app.jar" ]
     ports:
       - "9999:9999"
