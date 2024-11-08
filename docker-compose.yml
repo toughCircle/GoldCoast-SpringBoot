@@ -1,40 +1,55 @@
 version: "3.9"
 services:
-  mariadb:
-    container_name: mariadb
+  auth-db:
+    container_name: auth-db
     image: mariadb:latest
     environment:
       TZ: Asia/Jakarta
-      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD_AUTH}"
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
       MARIADB_USER: "${DB_USERNAME_AUTH}"
       MARIADB_PASSWORD: "${DB_PASSWORD_AUTH}"
       MARIADB_DATABASE: "${DB_NAME_AUTH}"
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3307:3306"
     healthcheck:
-      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_PASSWORD_AUTH}" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_ROOT_PASSWORD}" ]
       interval: 30s
       timeout: 10s
       retries: 5
     volumes:
-      - /home/ubuntu/mariadb_data:/var/lib/mysql
-    entrypoint:
-      sh -c "
-      echo 'CREATE DATABASE IF NOT EXISTS ${DB_NAME_AUTH};' > /docker-entrypoint-initdb.d/init.sql;
-      echo 'CREATE DATABASE IF NOT EXISTS ${DB_NAME_RESOURCE};' >> /docker-entrypoint-initdb.d/init.sql;
-      /usr/local/bin/docker-entrypoint.sh --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+      - /home/ubuntu/auth_db_data:/var/lib/mysql
+
+  resource-db:
+    container_name: resource-db
+    image: mariadb:latest
+    environment:
+      TZ: Asia/Jakarta
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MARIADB_USER: "${DB_USERNAME_RESOURCE}"
+      MARIADB_PASSWORD: "${DB_PASSWORD_RESOURCE}"
+      MARIADB_DATABASE: "${DB_NAME_RESOURCE}"
+    restart: unless-stopped
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_ROOT_PASSWORD}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /home/ubuntu/resource_db_data:/var/lib/mysql
 
   auth-server:
     build: ./auth-server
     container_name: auth-server
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mariadb://mariadb:3306/${DB_NAME_AUTH}"
+      SPRING_DATASOURCE_URL: "jdbc:mariadb://auth-db:3306/${DB_NAME_AUTH}"
       SPRING_DATASOURCE_USERNAME: "${DB_USERNAME_AUTH}"
       SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD_AUTH}"
       JWT_SECRET: "${JWT_SECRET}"
     depends_on:
-      mariadb:
+      auth-db:
         condition: service_healthy
     ports:
       - "8081:8081"
@@ -43,12 +58,12 @@ services:
     build: ./resource-server
     container_name: resource-server
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mariadb://mariadb:3306/${DB_NAME_RESOURCE}"
+      SPRING_DATASOURCE_URL: "jdbc:mariadb://resource-db:3306/${DB_NAME_RESOURCE}"
       SPRING_DATASOURCE_USERNAME: "${DB_USERNAME_RESOURCE}"
       SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD_RESOURCE}"
       JWT_SECRET: "${JWT_SECRET}"
     depends_on:
-      mariadb:
+      resource-db:
         condition: service_healthy
     ports:
       - "8082:8082"
