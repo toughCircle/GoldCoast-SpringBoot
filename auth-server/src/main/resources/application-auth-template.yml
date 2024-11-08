@@ -19,6 +19,11 @@ spring:
       expiration: 3600000
       refresh-expiration: 604800000
 
+logging:
+  level:
+    root: INFO
+    org.hibernate: DEBUG
+
 grpc:
   server:
     port: 50051
