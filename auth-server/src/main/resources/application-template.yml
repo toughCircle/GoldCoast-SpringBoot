@@ -7,9 +7,9 @@ spring:
   application:
     name: auth-server
   datasource:
-    url: ${MARIADB_URL_AUTH}
-    username: ${MARIADB_USER_AUTH}
-    password: ${MARIADB_PASSWORD_AUTH}
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:

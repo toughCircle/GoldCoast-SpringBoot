@@ -7,9 +7,9 @@ spring:
   application:
     name: resource-server
   datasource:
-    url: ${MARIADB_URL_RESOURCE}
-    username: ${MARIADB_USER_RESOURCE}
-    password: ${MARIADB_PASSWORD_RESOURCE}
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
@@ -34,5 +34,5 @@ springdoc:
     operationsSorter: alpha
 
 api:
-  key: "YOUR_API_KEY_HERE"  # 실제 API 키
-  url: "https://www.goldapi.io/api"  # 베이스 URL
+  key: ${API_KEY}  # 실제 API 키
+  url: https://www.goldapi.io/api  # 베이스 URL
