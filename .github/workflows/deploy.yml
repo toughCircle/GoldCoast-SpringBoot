@@ -27,10 +27,11 @@ jobs:
         working-directory: ./auth-server
         run: ./gradlew clean build
 
-      - name: Copy auth-server JAR to deploy directory
+      - name: Copy auth-server JAR and Dockerfile to deploy directory
         run: |
           mkdir -p deploy/auth-server
           cp ./auth-server/build/libs/*.jar ./deploy/auth-server/
+          cp ./auth-server/Dockerfile ./deploy/auth-server/
           echo "Contents of deploy/auth-server:"
           ls ./deploy/auth-server
 
@@ -42,10 +43,11 @@ jobs:
         working-directory: ./resource-server
         run: ./gradlew clean build
 
-      - name: Copy resource-server JAR to deploy directory
+      - name: Copy resource-server JAR and Dockerfile to deploy directory
         run: |
           mkdir -p deploy/resource-server
           cp ./resource-server/build/libs/*.jar ./deploy/resource-server/
+          cp ./resource-server/Dockerfile ./deploy/resource-server/
           echo "Contents of deploy/resource-server:"
           ls ./deploy/resource-server
 
