@@ -4,6 +4,7 @@ import Entry_BE_Assignment.auth_server.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class UserRegisterRequest {
 	private String password;
 
 	@Schema(description = "사용자 역할")
-	@NotEmpty(message = "사용자 역할은 필수 입력 값입니다.")
+	@NotNull(message = "사용자 역할은 필수 입력 값입니다.")
 	private Role role;
 
 }
