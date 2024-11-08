@@ -14,9 +14,9 @@ services:
       - "3307:3306"
     healthcheck:
       test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_ROOT_PASSWORD}" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      interval: 60s
+      timeout: 20s
+      retries: 10
     volumes:
       - /home/ubuntu/auth_db_data:/var/lib/mysql
 
@@ -34,9 +34,9 @@ services:
       - "3308:3306"
     healthcheck:
       test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_ROOT_PASSWORD}" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      interval: 60s
+      timeout: 20s
+      retries: 10
     volumes:
       - /home/ubuntu/resource_db_data:/var/lib/mysql
 
