@@ -11,7 +11,7 @@ services:
       MARIADB_DATABASE: "${DB_NAME_AUTH}"
     restart: unless-stopped
     ports:
-      - "3307:3306"
+      - "3306:3306"
     healthcheck:
       test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_ROOT_PASSWORD}" ]
       interval: 60s
@@ -31,7 +31,7 @@ services:
       MARIADB_DATABASE: "${DB_NAME_RESOURCE}"
     restart: unless-stopped
     ports:
-      - "3308:3306"
+      - "3307:3307"
     healthcheck:
       test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=${DB_ROOT_PASSWORD}" ]
       interval: 60s
