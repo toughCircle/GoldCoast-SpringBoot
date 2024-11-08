@@ -11,6 +11,7 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
+      dialect: org.hibernate.dialect.MariaDBDialect
       ddl-auto: update
     show-sql: true
 
