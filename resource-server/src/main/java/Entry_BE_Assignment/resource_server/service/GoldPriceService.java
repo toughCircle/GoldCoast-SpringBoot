@@ -32,7 +32,7 @@ public class GoldPriceService {
 	@Value("${api.key}")
 	private String apiKey;
 
-	@Value("${api.baseUrl}")
+	@Value("${api.url}")
 	private String baseUrl;
 
 	public String getGoldPriceInKRW() {
