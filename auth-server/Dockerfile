@@ -1,6 +1,7 @@
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-RUN yum -y install curl && \
+RUN apt-get update && \
+    apt-get install -y curl && \
     curl -o /app/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
     chmod +x /app/wait-for-it.sh
 COPY auth-server-0.0.1-SNAPSHOT.jar app.jar
