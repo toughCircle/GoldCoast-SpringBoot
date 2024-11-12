@@ -50,25 +50,25 @@ jobs:
           echo "Contents of deploy directory:"
           ls ./deploy
 
-      - name: Transfer deploy directory to EC2
+      - name: Transfer deploy directory to GCP VM Instance
         uses: appleboy/scp-action@v0.1.3
         with:
-          username: ec2-user
-          host: ${{ secrets.EC2_HOST }}
+          username: toughcircle
+          host: ${{ secrets.GCP_VM_HOST }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ./deploy/
-          target: /home/ec2-user/app/
+          target: /home/toughcircle/app/
           strip_components: 0
           overwrite: true
 
-      - name: Deploy Application on EC2 via SSH
+      - name: Deploy Application on GCP VM via SSH
         uses: appleboy/ssh-action@master
         with:
-          username: ec2-user
-          host: ${{ secrets.EC2_HOST }}
+          username: toughcircle
+          host: ${{ secrets.GCP_VM_HOST }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/ec2-user/app/deploy
+            cd /home/toughcircle/app/deploy
 
             docker-compose stop || echo "docker-compose stop 실패"
 
