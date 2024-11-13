@@ -139,16 +139,26 @@ public class OrderService {
 
 	// 전체 주문 목록 조회 (구매자와 판매자)
 	public Page<OrderDto> getAllOrders(UserResponse userResponse, Pageable pageable) {
-		String userId = String.valueOf(userResponse.getUserId());
+		Long userId = userResponse.getUserId();
 
 		if (userResponse.getRole().equals(String.valueOf(Role.BUYER))) {
-			Page<Order> byBuyerId = orderRepository.findByBuyerId(Long.parseLong(userId), pageable);
-			return byBuyerId.map(OrderDto::fromEntity); // Page<Order>를 Page<OrderDto>로 변환
+			// 구매자의 경우
+			Page<Order> byBuyerId = orderRepository.findByBuyerId(userId, pageable);
+			return byBuyerId.map(OrderDto::fromEntity); // 기존 변환 로직 유지
 		}
 
 		if (userResponse.getRole().equals(String.valueOf(Role.SELLER))) {
-			Page<Order> bySellerId = orderRepository.findBySellerId(Long.parseLong(userId), pageable);
-			return bySellerId.map(OrderDto::fromEntity); // Page<Order>를 Page<OrderDto>로 변환
+			// 판매자의 경우
+			Page<Order> bySellerId = orderRepository.findByItemSellerId(userId, pageable);
+			return bySellerId.map(order -> {
+				// 특정 판매자와 관련된 OrderItems만 필터링
+				List<OrderItem> sellerOrderItems = order.getOrderItems().stream()
+					.filter(orderItem -> orderItem.getItem().getSellerId().equals(userId))
+					.toList();
+
+				// fromEntityWithSellerItems 메서드 사용하여 변환
+				return OrderDto.fromEntityWithSellerItems(order, sellerOrderItems);
+			});
 		}
 
 		throw new BusinessException(StatusCode.FORBIDDEN);
