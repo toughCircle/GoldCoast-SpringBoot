@@ -50,13 +50,18 @@ public class OrderService {
 		// 구매자 권한 체크
 		orderValidator.validateUserRole(userResponse.getRole(), Role.BUYER);
 
-		// 주소 생성
-		Address address = Address.createAddress(
-			orderRequest.getAddress().getZipCode(),
-			orderRequest.getAddress().getStreetAddress(),
-			orderRequest.getAddress().getAddressDetail());
-
-		addressRepository.save(address);
+		// 주소 생성 및 중복 확인
+		Address address = addressRepository.findByZipCodeAndStreetAddressAndAddressDetail(
+				orderRequest.getAddress().getZipCode(),
+				orderRequest.getAddress().getStreetAddress(),
+				orderRequest.getAddress().getAddressDetail())
+			.orElseGet(() -> {
+				Address newAddress = Address.createAddress(
+					orderRequest.getAddress().getZipCode(),
+					orderRequest.getAddress().getStreetAddress(),
+					orderRequest.getAddress().getAddressDetail());
+				return addressRepository.save(newAddress);
+			});
 
 		// 주문 생성
 		Order order = Order.createOrder(userResponse.getUserId(), generateUniqueOrderNumber(), address);
