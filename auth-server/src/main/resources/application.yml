@@ -1,3 +1,3 @@
 spring:
   profiles:
-    active: auth
+    active: auth-template
