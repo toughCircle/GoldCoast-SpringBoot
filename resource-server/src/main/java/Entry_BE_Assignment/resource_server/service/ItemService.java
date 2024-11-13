@@ -70,6 +70,12 @@ public class ItemService {
 		return items.stream().map(ItemDto::fromEntity).toList();
 	}
 
+	// 판매자가 등록한 아이템 목록 조회
+	public List<ItemDto> getAllSellerItems(UserResponse userResponse) {
+		List<Item> items = itemRepository.findBySellerId(userResponse.getUserId());
+		return items.stream().map(ItemDto::fromEntity).toList();
+	}
+
 	// 아이템 수정 (판매자만 가능)
 	@Transactional
 	public void updateItem(Long itemId, ItemRequest itemRequest, UserResponse userResponse) {

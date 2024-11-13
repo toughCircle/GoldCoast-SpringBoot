@@ -58,6 +58,15 @@ public class ItemController {
 		return BaseApiResponse.of(StatusCode.ITEM_SUCCESS, items);
 	}
 
+	@GetMapping("/seller")
+	public BaseApiResponse<List<ItemDto>> getAllSellerItems(
+		@RequestHeader("Authorization") String token
+	) {
+		UserResponse userResponse = getUserResponse(token);
+		List<ItemDto> allSellerItems = itemService.getAllSellerItems(userResponse);
+		return BaseApiResponse.of(StatusCode.ITEM_SUCCESS, allSellerItems);
+	}
+
 	// 아이템 수정 (판매자만 가능)
 	@PatchMapping("/{itemId}")
 	public BaseApiResponse<Void> updateItem(
