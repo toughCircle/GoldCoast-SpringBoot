@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 
 import Entry_BE_Assignment.auth_server.enums.Role;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public class LoginResponse {
 	private Role role;
