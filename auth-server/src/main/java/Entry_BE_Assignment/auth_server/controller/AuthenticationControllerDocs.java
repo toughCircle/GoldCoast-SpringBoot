@@ -3,6 +3,7 @@ package Entry_BE_Assignment.auth_server.controller;
 import org.springframework.http.ResponseEntity;
 
 import Entry_BE_Assignment.auth_server.dto.BaseApiResponse;
+import Entry_BE_Assignment.auth_server.dto.LoginResponse;
 import Entry_BE_Assignment.auth_server.dto.UserLoginRequest;
 import Entry_BE_Assignment.auth_server.dto.UserRegisterRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public interface AuthenticationControllerDocs {
 		@ApiResponse(responseCode = "200", description = "로그인에 성공했습니다."),
 		@ApiResponse(responseCode = "400", description = "유효하지 않은 인증 정보입니다.")
 	})
-	ResponseEntity<BaseApiResponse<Void>> login(UserLoginRequest request,
+	ResponseEntity<BaseApiResponse<LoginResponse>> login(UserLoginRequest request,
 		HttpServletRequest httpServletRequest);
 
 	@Operation(summary = "AccessToken 재발급", description = "토큰 재발급을 요청합니다.")

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Entry_BE_Assignment.auth_server.dto.BaseApiResponse;
+import Entry_BE_Assignment.auth_server.dto.LoginResponse;
 import Entry_BE_Assignment.auth_server.dto.Tokens;
 import Entry_BE_Assignment.auth_server.dto.UserLoginRequest;
 import Entry_BE_Assignment.auth_server.dto.UserRegisterRequest;
@@ -63,7 +64,7 @@ public class AuthenticationController implements AuthenticationControllerDocs {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<BaseApiResponse<Void>> login(@Valid @RequestBody UserLoginRequest request,
+	public ResponseEntity<BaseApiResponse<LoginResponse>> login(@Valid @RequestBody UserLoginRequest request,
 		HttpServletRequest httpServletRequest) {
 
 		String ip = getClientIp(httpServletRequest);
@@ -74,7 +75,7 @@ public class AuthenticationController implements AuthenticationControllerDocs {
 		return ResponseEntity.ok()
 			.header("Authorization", "Bearer " + tokens.getAccessToken())
 			.header("Refresh-Token", tokens.getRefreshToken())
-			.body(BaseApiResponse.of(StatusCode.LOGIN_SUCCESS));
+			.body(BaseApiResponse.of(StatusCode.LOGIN_SUCCESS, tokens.getLoginResponse()));
 	}
 
 }

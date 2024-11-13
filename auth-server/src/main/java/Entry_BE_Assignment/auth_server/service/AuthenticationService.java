@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import Entry_BE_Assignment.auth_server.dto.LoginResponse;
 import Entry_BE_Assignment.auth_server.dto.Tokens;
 import Entry_BE_Assignment.auth_server.dto.UserLoginRequest;
 import Entry_BE_Assignment.auth_server.dto.UserRegisterRequest;
@@ -72,13 +73,18 @@ public class AuthenticationService {
 			// 인증된 사용자 정보에서 UserDetails 가져오기
 			UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 
+			User user = userRepository.findByUsername(userDetails.getUsername())
+				.orElseThrow(() -> new BusinessException(StatusCode.USER_NOT_FOUND));
+
 			// JWT Access Token 생성
 			String accessToken = jwtManager.generateToken(authentication);
 
 			// JWT Refresh Token 생성
 			String refreshToken = jwtManager.generateRefreshToken(authentication, ipAddress, userAgent);
 
-			return new Tokens(accessToken, refreshToken);
+			LoginResponse loginResponse = new LoginResponse(user.getRole(), user.getEmail(), user.getUsername(),
+				user.getCreatedAt());
+			return new Tokens(accessToken, refreshToken, loginResponse);
 
 		} catch (BadCredentialsException e) {
 			throw new BusinessException(StatusCode.INVALID_CREDENTIALS);

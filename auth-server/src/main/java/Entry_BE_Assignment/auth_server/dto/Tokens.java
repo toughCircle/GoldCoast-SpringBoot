@@ -9,5 +9,5 @@ public class Tokens {
 
 	private String accessToken;
 	private String refreshToken;
-
+	private LoginResponse loginResponse;
 }
