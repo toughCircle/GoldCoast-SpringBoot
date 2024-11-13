@@ -10,7 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/api/auth/**")
 			.allowedOrigins("http://java.gold-coast.shop", "http://localhost:3000")
-			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE");
+			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+			.allowedHeaders("Authorization", "Content-Type", "Refresh-Token")
+			.exposedHeaders("Authorization", "Refresh-Token");
 	}
 }
 
