@@ -12,7 +12,7 @@ public class GrpcClientConfig {
 
 	@Bean
 	public ManagedChannel managedChannel() {
-		return NettyChannelBuilder.forAddress("localhost", 50051)  // 인증 서버의 호스트와 포트
+		return NettyChannelBuilder.forAddress("auth-server", 50051)  // 인증 서버의 호스트와 포트
 			.usePlaintext()
 			.disableServiceConfigLookUp()  // 통계 수집 비활성화
 			.build();

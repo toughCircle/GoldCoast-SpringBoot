@@ -13,6 +13,8 @@ services:
       - "3306:3306"
     volumes:
       - /home/toughcircle/auth_db_data:/var/lib/mysql
+    networks:
+      - my_network  # 네트워크 추가
 
   resource-db:
     container_name: resource-db
@@ -28,6 +30,8 @@ services:
       - "3307:3307"
     volumes:
       - /home/toughcircle/resource_db_data:/var/lib/mysql
+    networks:
+      - my_network
 
   auth-server:
     build:
@@ -43,6 +47,8 @@ services:
       - auth-db
     ports:
       - "8888:8888"
+    networks:
+      - my_network
 
   resource-server:
     build:
@@ -55,7 +61,15 @@ services:
       DATASOURCE_PASSWORD: "${DB_PASSWORD_RESOURCE}"
       API_KEY: "${API_KEY}"
       JWT_SECRET: "${JWT_SECRET}"
+      GRPC_AUTH_SERVER_URL: "auth-server:50051"
     depends_on:
       - resource-db
+      - auth-server
     ports:
       - "9999:9999"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
