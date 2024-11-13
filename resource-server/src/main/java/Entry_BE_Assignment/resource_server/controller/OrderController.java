@@ -34,14 +34,14 @@ public class OrderController implements OrderControllerDocs {
 	private final AuthServiceGrpc.AuthServiceBlockingStub authServiceStub;  // gRPC 클라이언트
 
 	@PostMapping
-	public BaseApiResponse<Void> createOrder(
+	public BaseApiResponse<OrderDto> createOrder(
 		@RequestBody OrderRequest orderRequest,
 		@RequestHeader("Authorization") String token) {
 
 		UserResponse userResponse = getUserResponse(token);
 
-		orderService.createOrder(orderRequest, userResponse);
-		return BaseApiResponse.of(StatusCode.ORDER_CREATED);
+		OrderDto orderDto = orderService.createOrder(orderRequest, userResponse);
+		return BaseApiResponse.of(StatusCode.ORDER_CREATED, orderDto);
 	}
 
 	// 주문 상태 업데이트 (역할에 따라 처리)

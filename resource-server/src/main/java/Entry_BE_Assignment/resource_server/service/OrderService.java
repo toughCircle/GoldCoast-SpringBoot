@@ -45,7 +45,7 @@ public class OrderService {
 	private static final int RANDOM_PART_LENGTH = 4;
 
 	@Transactional
-	public void createOrder(OrderRequest orderRequest, UserResponse userResponse) {
+	public OrderDto createOrder(OrderRequest orderRequest, UserResponse userResponse) {
 
 		// 구매자 권한 체크
 		orderValidator.validateUserRole(userResponse.getRole(), Role.BUYER);
@@ -77,7 +77,9 @@ public class OrderService {
 		int totalPrice = calculateTotalPrice(order.getOrderItems());
 		order.updateTotalPrice(totalPrice);
 
-		orderRepository.save(order);
+		Order savedOrder = orderRepository.save(order);
+
+		return OrderDto.fromEntity(savedOrder);
 	}
 
 	// 주문 총 금액 계산

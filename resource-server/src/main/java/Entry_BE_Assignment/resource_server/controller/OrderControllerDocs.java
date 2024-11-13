@@ -22,7 +22,7 @@ public interface OrderControllerDocs {
 		@ApiResponse(responseCode = "404", description = "존재하지 않는 상품입니다.")
 	})
 	BaseApiResponse
-		<Void> createOrder(
+		<OrderDto> createOrder(
 		OrderRequest orderRequest,
 		String token);
 
