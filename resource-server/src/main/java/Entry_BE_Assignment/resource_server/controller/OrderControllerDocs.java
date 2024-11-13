@@ -1,7 +1,6 @@
 package Entry_BE_Assignment.resource_server.controller;
 
-import java.time.LocalDate;
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 import Entry_BE_Assignment.resource_server.dto.BaseApiResponse;
 import Entry_BE_Assignment.resource_server.dto.OrderDto;
@@ -53,11 +52,10 @@ public interface OrderControllerDocs {
 		@ApiResponse(responseCode = "200", description = "주문이 성공적으로 처리되었습니다."),
 		@ApiResponse(responseCode = "403", description = "해당 요청에 대한 권한이 없습니다.")
 	})
-	public BaseApiResponse<List<OrderDto>> getAllOrders(
+	public BaseApiResponse<Page<OrderDto>> getAllOrders(
 		String token,
-		OrderStatus status,
-		LocalDate startDate,
-		LocalDate endDate
+		int page,
+		int limit
 	);
 
 	@Operation(summary = "특정 주문 취소", description = "특정 주문을 취소합니다.")

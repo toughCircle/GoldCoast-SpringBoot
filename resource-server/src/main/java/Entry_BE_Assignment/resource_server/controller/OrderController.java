@@ -1,9 +1,7 @@
 package Entry_BE_Assignment.resource_server.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,16 +73,17 @@ public class OrderController implements OrderControllerDocs {
 
 	// 전체 주문 목록 조회
 	@GetMapping
-	public BaseApiResponse<List<OrderDto>> getAllOrders(
+	public BaseApiResponse<Page<OrderDto>> getAllOrders(
 		@RequestHeader("Authorization") String token,
-		@RequestParam(required = false) OrderStatus status,
-		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "5") int limit
 	) {
 
 		UserResponse userResponse = getUserResponse(token);
 
-		List<OrderDto> orders = orderService.getAllOrders(userResponse);
+		PageRequest pageRequest = PageRequest.of(page - 1, limit); // 페이지는 0부터 시작하므로 -1
+
+		Page<OrderDto> orders = orderService.getAllOrders(userResponse, pageRequest);
 		return BaseApiResponse.of(StatusCode.ORDER_SUCCESS, orders);
 	}
 

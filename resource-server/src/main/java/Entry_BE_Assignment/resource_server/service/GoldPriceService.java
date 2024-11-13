@@ -2,6 +2,7 @@ package Entry_BE_Assignment.resource_server.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import Entry_BE_Assignment.resource_server.dto.GoldPriceDto;
 import Entry_BE_Assignment.resource_server.entity.GoldPrice;
 import Entry_BE_Assignment.resource_server.enums.ItemType;
 import Entry_BE_Assignment.resource_server.enums.StatusCode;
@@ -126,6 +128,16 @@ public class GoldPriceService {
 				existingGoldPrice.updatePrice(pricePerGram);
 			}
 		}
+	}
+
+	public List<GoldPriceDto> getPrices() {
+		List<GoldPrice> goldPrices = null;
+		try {
+			goldPrices = goldPriceRepository.findAll();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return goldPrices.stream().map(GoldPriceDto::fromEntity).toList();
 	}
 
 }

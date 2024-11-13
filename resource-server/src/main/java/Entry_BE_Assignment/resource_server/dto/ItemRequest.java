@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class ItemRequest {
 
-	@Schema(description = "아이템 ID", example = "GOLD_24")
+	@Schema(description = "아이템 타입", example = "GOLD_24")
 	private ItemType itemType;
 
 	@Schema(description = "수량", example = "5.00")

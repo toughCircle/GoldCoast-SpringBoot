@@ -3,6 +3,8 @@ package Entry_BE_Assignment.resource_server.entity;
 import Entry_BE_Assignment.resource_server.enums.ItemType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,6 +28,7 @@ public class GoldPrice extends BaseEntity {
 	private Long id;
 
 	@Column(name = "gold_type", nullable = false)
+	@Enumerated(EnumType.STRING)
 	private ItemType goldType;
 
 	@Column(name = "price", nullable = false)

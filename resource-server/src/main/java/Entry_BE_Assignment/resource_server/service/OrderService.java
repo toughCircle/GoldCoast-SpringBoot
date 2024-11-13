@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,17 +138,17 @@ public class OrderService {
 	}
 
 	// 전체 주문 목록 조회 (구매자와 판매자)
-	public List<OrderDto> getAllOrders(UserResponse userResponse) {
+	public Page<OrderDto> getAllOrders(UserResponse userResponse, Pageable pageable) {
 		String userId = String.valueOf(userResponse.getUserId());
 
 		if (userResponse.getRole().equals(String.valueOf(Role.BUYER))) {
-			List<Order> byBuyerId = orderRepository.findByBuyerId(Long.parseLong(userId));
-			return byBuyerId.stream().map(OrderDto::fromEntity).toList();
+			Page<Order> byBuyerId = orderRepository.findByBuyerId(Long.parseLong(userId), pageable);
+			return byBuyerId.map(OrderDto::fromEntity); // Page<Order>를 Page<OrderDto>로 변환
 		}
 
 		if (userResponse.getRole().equals(String.valueOf(Role.SELLER))) {
-			List<Order> bySellerId = orderRepository.findBySellerId(Long.parseLong(userId));
-			return bySellerId.stream().map(OrderDto::fromEntity).toList();
+			Page<Order> bySellerId = orderRepository.findBySellerId(Long.parseLong(userId), pageable);
+			return bySellerId.map(OrderDto::fromEntity); // Page<Order>를 Page<OrderDto>로 변환
 		}
 
 		throw new BusinessException(StatusCode.FORBIDDEN);

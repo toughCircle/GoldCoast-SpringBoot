@@ -27,9 +27,12 @@ public class BaseApiResponse<T> {
 	@Schema(description = "응답 메시지", example = "요청이 성공했습니다.")
 	private final String message;
 
+	@Schema(description = "전체 데이터 개수", example = "5")
+	private Long total;
+
 	@Schema(description = "페이지")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private PaginationLinks links;
+	private PaginationLinks pagination;
 
 	public BaseApiResponse(HttpStatus status, String message, T data) {
 		this.code = status.value();
@@ -66,5 +69,15 @@ public class BaseApiResponse<T> {
 	// 상태 코드, 데이터를 통해 정의하는 경우
 	public static <T> BaseApiResponse<T> of(StatusCode statusCode, T data) {
 		return of(statusCode.getHttpStatus(), statusCode.getMessage(), data);
+	}
+
+	public BaseApiResponse<T> withTotal(Long total) {
+		this.total = total;
+		return this;
+	}
+
+	public BaseApiResponse<T> withPagination(PaginationLinks pagination) {
+		this.pagination = pagination;
+		return this;
 	}
 }
