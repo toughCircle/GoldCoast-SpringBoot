@@ -1,5 +1,7 @@
 package Entry_BE_Assignment.resource_server.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import Entry_BE_Assignment.resource_server.dto.BaseApiResponse;
 import Entry_BE_Assignment.resource_server.dto.OrderDto;
 import Entry_BE_Assignment.resource_server.dto.OrderRequest;
+import Entry_BE_Assignment.resource_server.dto.PaginationLinks;
 import Entry_BE_Assignment.resource_server.entity.Order;
 import Entry_BE_Assignment.resource_server.enums.OrderStatus;
 import Entry_BE_Assignment.resource_server.enums.Role;
@@ -71,9 +74,29 @@ public class OrderController implements OrderControllerDocs {
 		return BaseApiResponse.of(StatusCode.ORDER_SUCCESS, order);
 	}
 
+	// 주문 조회 (상품 ID로 조회)
+	@GetMapping("/Items/{itemId}")
+	public BaseApiResponse<List<OrderDto>> getOrdersByItemId(
+		@RequestHeader("Authorization") String token,
+		@PathVariable Long itemId,
+		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "5") int limit
+	) {
+
+		UserResponse userResponse = getUserResponse(token);
+
+		PageRequest pageRequest = PageRequest.of(page - 1, limit);
+
+		Page<OrderDto> orders = orderService.getOrdersByItemId(itemId, userResponse, pageRequest);
+
+		return BaseApiResponse.of(StatusCode.ORDER_SUCCESS, orders.getContent())
+			.withPagination(PaginationLinks.from(orders))
+			.withTotal(orders.getTotalElements());
+	}
+
 	// 전체 주문 목록 조회
 	@GetMapping
-	public BaseApiResponse<Page<OrderDto>> getAllOrders(
+	public BaseApiResponse<List<OrderDto>> getAllOrders(
 		@RequestHeader("Authorization") String token,
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "5") int limit
@@ -81,10 +104,15 @@ public class OrderController implements OrderControllerDocs {
 
 		UserResponse userResponse = getUserResponse(token);
 
-		PageRequest pageRequest = PageRequest.of(page - 1, limit); // 페이지는 0부터 시작하므로 -1
+		PageRequest pageRequest = PageRequest.of(page - 1, limit);
 
 		Page<OrderDto> orders = orderService.getAllOrders(userResponse, pageRequest);
-		return BaseApiResponse.of(StatusCode.ORDER_SUCCESS, orders);
+
+		return
+			BaseApiResponse.of(StatusCode.ORDER_SUCCESS, orders.getContent())
+				.withPagination(PaginationLinks.from(orders))
+				.withTotal(orders.getTotalElements());
+
 	}
 
 	// 주문 취소

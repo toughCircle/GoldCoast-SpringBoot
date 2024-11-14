@@ -1,6 +1,6 @@
 package Entry_BE_Assignment.resource_server.controller;
 
-import org.springframework.data.domain.Page;
+import java.util.List;
 
 import Entry_BE_Assignment.resource_server.dto.BaseApiResponse;
 import Entry_BE_Assignment.resource_server.dto.OrderDto;
@@ -47,12 +47,24 @@ public interface OrderControllerDocs {
 		Long orderId,
 		String token);
 
+	@Operation(summary = "특정 상품의 주문 리스트 조회", description = "특정 상품의 모든 주문 정보를 조회합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "주문이 성공적으로 처리되었습니다."),
+		@ApiResponse(responseCode = "403", description = "해당 요청에 대한 권한이 없습니다.")
+	})
+	public BaseApiResponse<List<OrderDto>> getOrdersByItemId(
+		String token,
+		Long itemId,
+		int page,
+		int limit
+	);
+
 	@Operation(summary = "주문 리스트 조회", description = "사용자의 모든 주문 정보를 조회합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "주문이 성공적으로 처리되었습니다."),
 		@ApiResponse(responseCode = "403", description = "해당 요청에 대한 권한이 없습니다.")
 	})
-	public BaseApiResponse<Page<OrderDto>> getAllOrders(
+	public BaseApiResponse<List<OrderDto>> getAllOrders(
 		String token,
 		int page,
 		int limit

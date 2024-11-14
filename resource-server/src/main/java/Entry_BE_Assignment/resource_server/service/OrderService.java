@@ -197,4 +197,21 @@ public class OrderService {
 		return orderRepository.findById(orderId)
 			.orElseThrow(() -> new BusinessException(StatusCode.ORDER_NOT_FOUND));
 	}
+
+	public Page<OrderDto> getOrdersByItemId(Long itemId, UserResponse userResponse, Pageable pageable) {
+
+		Item item = itemRepository.findById(itemId)
+			.orElseThrow(() -> new BusinessException(StatusCode.ITEM_NOT_FOUND));
+
+		Page<Order> orders;
+		if (userResponse.getUserId() == item.getSellerId()) {
+			orders = orderRepository.findByItemId(itemId, pageable);
+		} else {
+			throw new BusinessException(StatusCode.FORBIDDEN);
+		}
+
+		// Order 엔터티 리스트를 OrderDto 리스트로 변환
+		return orders.map(OrderDto::fromEntity);
+	}
+
 }
