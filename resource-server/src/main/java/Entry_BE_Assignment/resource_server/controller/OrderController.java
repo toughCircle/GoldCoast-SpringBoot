@@ -75,7 +75,7 @@ public class OrderController implements OrderControllerDocs {
 	}
 
 	// 주문 조회 (상품 ID로 조회)
-	@GetMapping("/Items/{itemId}")
+	@GetMapping("/items/{itemId}")
 	public BaseApiResponse<List<OrderDto>> getOrdersByItemId(
 		@RequestHeader("Authorization") String token,
 		@PathVariable Long itemId,
