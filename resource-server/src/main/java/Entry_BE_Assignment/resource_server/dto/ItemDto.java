@@ -12,7 +12,7 @@ public class ItemDto {
 	@Schema(description = "아이템 ID", example = "101")
 	Long id;
 
-	@Schema(description = "아이템 유형", example = "99.9% 금")
+	@Schema(description = "아이템 유형", example = "GOLD_24")
 	String itemType;
 
 	@Schema(description = "가격", example = "100000")

@@ -28,6 +28,7 @@ public class BaseApiResponse<T> {
 	private final String message;
 
 	@Schema(description = "전체 데이터 개수", example = "5")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Long total;
 
 	@Schema(description = "페이지")
