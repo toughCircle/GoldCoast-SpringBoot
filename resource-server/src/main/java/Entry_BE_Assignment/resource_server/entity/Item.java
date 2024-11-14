@@ -58,4 +58,8 @@ public class Item {
 		this.quantity = quantity;
 	}
 
+	public void increaseStock(BigDecimal quantity) {
+		this.quantity = this.quantity.add(quantity); // 재고를 주문 수량만큼 증가
+	}
+
 }

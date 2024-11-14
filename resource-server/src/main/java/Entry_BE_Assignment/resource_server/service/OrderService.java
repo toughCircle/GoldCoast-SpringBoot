@@ -183,6 +183,13 @@ public class OrderService {
 		// 입금 전이라면 취소 가능
 		if (order.getStatus() == OrderStatus.ORDER_PLACED) {
 			order.updateOrderStatus(OrderStatus.ORDER_CANCELLED);
+
+			// 재고 복구 로직: 각 주문 항목의 수량을 원래 상태로 되돌림
+			for (OrderItem orderItem : order.getOrderItems()) {
+				Item item = orderItem.getItem();
+				item.increaseStock(orderItem.getQuantity());
+			}
+
 		} else if (order.getStatus() == OrderStatus.PAYMENT_RECEIVED || order.getStatus() == OrderStatus.SHIPPED) {
 			// 입금 후부터는 환불 절차로 처리
 			throw new BusinessException(StatusCode.REFUND_REQUIRED);
