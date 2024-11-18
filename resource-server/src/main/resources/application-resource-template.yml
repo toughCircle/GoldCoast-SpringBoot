@@ -29,10 +29,8 @@ logging:
     org.hibernate: DEBUG
 
 springdoc:
-  api-docs:
-    path: /resource-api-docs
   swagger-ui:
-    path: /resource-swagger-ui.html
+    path: /swagger-ui/
     display-query-params: true
     operationsSorter: alpha
 

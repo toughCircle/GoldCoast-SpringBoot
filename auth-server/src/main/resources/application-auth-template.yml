@@ -29,7 +29,5 @@ grpc:
     port: 50051
 
 springdoc:
-  api-docs:
-    path: /auth-api-docs
   swagger-ui:
-    path: /auth-swagger-ui.html
+    path: /swagger-ui/
