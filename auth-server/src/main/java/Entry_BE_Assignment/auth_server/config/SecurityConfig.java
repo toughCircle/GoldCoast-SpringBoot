@@ -29,10 +29,10 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authorizeRequests -> authorizeRequests
 				.requestMatchers(
-					"/swagger-ui/**",
-					"/v3/api-docs/**",
-					"/swagger-ui.html",
-					"/api-docs/**",
+					"/auth-swagger-ui/**",
+					"/v3/auth-api-docs/**",
+					"/auth-swagger-ui.html",
+					"/auth-api-docs/**",
 					"/webjars/**",
 					"/favicon.ico"
 				).permitAll()  // Swagger UI 관련 경로에 인증 없이 접근 허용
