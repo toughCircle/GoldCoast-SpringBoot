@@ -6,31 +6,39 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 public class SwaggerConfig {
 
 	@Bean
-	public OpenAPI customOpenAPI() {
-		return new OpenAPI()
-			.servers(Arrays.asList(
-				new Server().url("http://localhost:8888").description("Auth Server"), // 인증 서버
-				new Server().url("http://localhost:9999").description("Resource Server") // 자원 서버
-			))
-			.info(new Info()
-				.title("Auth-Resource-Project API")
-				.description("통합 API 문서")
-				.version("1.0"));
-	}
-
-	@Bean
 	public GroupedOpenApi resourceApi() {
 		return GroupedOpenApi.builder()
-			.group("Resource API")
+			.group("Resource API") // 자원 서버 API 그룹 이름
 			.pathsToMatch("/api/**")
 			.build();
 	}
+
+	@Bean
+	public OpenAPI resourceOpenAPI() {
+		return new OpenAPI()
+			.info(new Info()
+				.title("Resource Server API")
+				.description("Resource Server 관련 API 문서입니다.")
+				.version("1.0"))
+			.servers(Arrays.asList(
+				new Server().url("http://localhost:9999").description("Local Resource Server"),
+				new Server().url("http://java.gold-coast.shop").description("Production Resource Server")
+			))
+			.components(new Components()
+				.addSecuritySchemes("bearer-key",
+					new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
+			.addSecurityItem(new SecurityRequirement().addList("bearer-key"));
+	}
+
 }

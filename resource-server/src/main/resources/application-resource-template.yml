@@ -30,9 +30,9 @@ logging:
 
 springdoc:
   api-docs:
-    path: /v3/api-docs
+    path: /resource-api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /resource-swagger-ui.html
     display-query-params: true
     operationsSorter: alpha
 
