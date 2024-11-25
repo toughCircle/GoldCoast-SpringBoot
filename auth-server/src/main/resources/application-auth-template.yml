@@ -30,6 +30,7 @@ grpc:
 
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    path: /swagger-ui/index.html
   api-docs:
     path: /v3/api-docs

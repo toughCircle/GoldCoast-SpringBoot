@@ -30,7 +30,8 @@ logging:
 
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    path: /swagger-ui/index.html
     display-query-params: true
     operationsSorter: alpha
   api-docs:
