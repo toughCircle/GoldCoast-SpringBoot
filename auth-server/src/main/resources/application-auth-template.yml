@@ -30,8 +30,6 @@ grpc:
 
 springdoc:
   swagger-ui:
-    path: /auth/swagger-ui.html
-    display-query-params: true
-    operationsSorter: alpha
+    path: /swagger-ui.html
   api-docs:
-    path: /auth/api-docs
+    path: /v3/api-docs

@@ -30,11 +30,11 @@ logging:
 
 springdoc:
   swagger-ui:
-    path: /resource/swagger-ui.html
+    path: /swagger-ui.html
     display-query-params: true
     operationsSorter: alpha
   api-docs:
-    path: /resource/api-docs
+    path: /v3/api-docs
 
 api:
   key: ${API_KEY}  # 실제 API 키
