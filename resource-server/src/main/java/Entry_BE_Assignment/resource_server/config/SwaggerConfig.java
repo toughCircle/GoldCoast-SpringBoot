@@ -1,6 +1,6 @@
 package Entry_BE_Assignment.resource_server.config;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
@@ -31,9 +31,9 @@ public class SwaggerConfig {
 				.title("Resource Server API")
 				.description("Resource Server 관련 API 문서입니다.")
 				.version("1.0"))
-			.servers(Arrays.asList(
-				new Server().url("http://localhost:9999").description("Local Resource Server"),
-				new Server().url("http://java.gold-coast.shop").description("Production Resource Server")
+			.servers(Collections.singletonList(
+				new Server().url("http://java.gold-coast.shop/resource")
+					.description("Production Resource Server")
 			))
 			.components(new Components()
 				.addSecuritySchemes("bearer-key",

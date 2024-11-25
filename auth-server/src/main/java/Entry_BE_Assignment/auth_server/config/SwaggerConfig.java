@@ -1,6 +1,6 @@
 package Entry_BE_Assignment.auth_server.config;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
@@ -31,9 +31,9 @@ public class SwaggerConfig {
 				.title("Auth Server API")
 				.description("Auth Server 관련 API 문서입니다.")
 				.version("1.0"))
-			.servers(Arrays.asList(
-				new Server().url("http://localhost:8888").description("Local Auth Server"),
-				new Server().url("http://java.gold-coast.shop").description("Production Auth Server")
+			.servers(Collections.singletonList(
+				new Server().url("http://java.gold-coast.shop/auth")
+					.description("Production Auth Server")
 			))
 			.components(new Components()
 				.addSecuritySchemes("bearer-key",
