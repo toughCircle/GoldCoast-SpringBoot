@@ -6,8 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class OrderItemRequest {
 
 	@Schema(description = "아이템 ID", example = "101")

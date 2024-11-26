@@ -1,7 +1,7 @@
 package Entry_BE_Assignment.resource_server.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import Entry_BE_Assignment.resource_server.dto.OrderDto;
-import Entry_BE_Assignment.resource_server.dto.OrderItemRequest;
 import Entry_BE_Assignment.resource_server.dto.OrderRequest;
 import Entry_BE_Assignment.resource_server.entity.Address;
 import Entry_BE_Assignment.resource_server.entity.Item;
@@ -23,7 +22,6 @@ import Entry_BE_Assignment.resource_server.enums.Role;
 import Entry_BE_Assignment.resource_server.enums.StatusCode;
 import Entry_BE_Assignment.resource_server.exception.customException.BusinessException;
 import Entry_BE_Assignment.resource_server.grpc.UserResponse;
-import Entry_BE_Assignment.resource_server.repository.AddressRepository;
 import Entry_BE_Assignment.resource_server.repository.ItemRepository;
 import Entry_BE_Assignment.resource_server.repository.OrderRepository;
 import Entry_BE_Assignment.resource_server.validation.OrderValidator;
@@ -35,14 +33,16 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
-	private final AddressRepository addressRepository;
+	private final AddressService addressService;
 	private final ItemRepository itemRepository;
+	private final OrderItemService orderItemService;
 	private final OrderValidator orderValidator;
 	private final PriceFactory priceFactory;
 
 	private static final String ORDER_PREFIX = "ORD-";
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 	private static final int RANDOM_PART_LENGTH = 4;
+	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
 	@Transactional
 	public OrderDto createOrder(OrderRequest orderRequest, UserResponse userResponse) {
@@ -50,50 +50,24 @@ public class OrderService {
 		// 구매자 권한 체크
 		orderValidator.validateUserRole(userResponse.getRole(), Role.BUYER);
 
-		// 주소 생성 및 중복 확인
-		Address address = addressRepository.findByZipCodeAndStreetAddressAndAddressDetail(
-				orderRequest.getAddress().getZipCode(),
-				orderRequest.getAddress().getStreetAddress(),
-				orderRequest.getAddress().getAddressDetail())
-			.orElseGet(() -> {
-				Address newAddress = Address.createAddress(
-					orderRequest.getAddress().getZipCode(),
-					orderRequest.getAddress().getStreetAddress(),
-					orderRequest.getAddress().getAddressDetail());
-				return addressRepository.save(newAddress);
-			});
+		// 주소 처리 (중복 확인 및 생성)
+		Address address = addressService.getOrCreateAddress(orderRequest.getAddress());
 
 		// 주문 생성
 		Order order = Order.createOrder(userResponse.getUserId(), generateUniqueOrderNumber(), address);
 
-		for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
-			Item item = itemRepository.findById(itemRequest.getItemId())
-				.orElseThrow(() -> new BusinessException(StatusCode.ITEM_NOT_FOUND));
+		// 주문 아이템 추가
+		List<OrderItem> orderItems = orderItemService.createOrderItems(order, orderRequest.getOrderItems());
+		order.addOrderItems(orderItems);
 
-			orderValidator.validateItemQuantity(itemRequest.getQuantity(), item.getQuantity());
-
-			OrderItem orderItem = priceFactory.createOrderItem(order, item, itemRequest.getQuantity());
-			order.addOrderItem(orderItem);
-
-			// 각 상품의 판매 가능 수량 조정
-			item.updateItemQuantity(item.getQuantity().subtract(itemRequest.getQuantity()));
-		}
-
-		int totalPrice = calculateTotalPrice(order.getOrderItems());
+		// 총 가격 계산 및 업데이트
+		int totalPrice = priceFactory.calculateTotalPrice(orderItems);
 		order.updateTotalPrice(totalPrice);
 
+		// 주문 저장
 		Order savedOrder = orderRepository.save(order);
 
 		return OrderDto.fromEntity(savedOrder);
-	}
-
-	// 주문 총 금액 계산
-	private int calculateTotalPrice(List<OrderItem> orderItems) {
-		return orderItems.stream()
-			.map(orderItem -> new BigDecimal(
-				priceFactory.calculateTotalPrice(orderItem.getItem(), orderItem.getQuantity())))
-			.reduce(BigDecimal.ZERO, BigDecimal::add)
-			.intValueExact();
 	}
 
 	// 주문 조회
@@ -118,10 +92,12 @@ public class OrderService {
 	}
 
 	private String generateUniqueOrderNumber() {
-		String datePart = LocalDate.now().format(DATE_FORMATTER);
-		String randomPart = String.format("%0" + RANDOM_PART_LENGTH + "d",
-			(int)(Math.random() * Math.pow(10, RANDOM_PART_LENGTH)));
-		return ORDER_PREFIX + datePart + "-" + randomPart;
+		String datePart = LocalDateTime.now().format(DATE_FORMATTER);
+		long currentMillis = System.currentTimeMillis();
+		int randomValue = SECURE_RANDOM.nextInt((int)Math.pow(10, RANDOM_PART_LENGTH));
+		long combinedValue = currentMillis + randomValue;
+
+		return ORDER_PREFIX + datePart + "-" + combinedValue;
 	}
 
 	public OrderDto getOrderById(Long orderId, UserResponse userResponse) {

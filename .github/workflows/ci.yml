@@ -87,6 +87,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD_RESOURCE }}
           MYSQL_DATABASE: ${{ secrets.DB_NAME_RESOURCE }}
           MYSQL_USER: ${{ secrets.DB_USERNAME_RESOURCE }}
+          API_KEY: ${{ secrets.API_KEY }}
         options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
           --health-interval=10s

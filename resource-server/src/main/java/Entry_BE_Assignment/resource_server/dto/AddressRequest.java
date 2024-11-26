@@ -2,8 +2,10 @@ package Entry_BE_Assignment.resource_server.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class AddressRequest {
 
 	@Schema(description = "우편번호", example = "12345")

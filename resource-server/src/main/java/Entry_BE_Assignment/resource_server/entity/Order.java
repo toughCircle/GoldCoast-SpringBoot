@@ -65,9 +65,9 @@ public class Order extends BaseEntity {
 			.build();
 	}
 
-	public void addOrderItem(OrderItem orderItem) {
-		orderItems.add(orderItem);
-		orderItem.addOrder(this);
+	public void addOrderItems(List<OrderItem> orderItems) {
+		this.orderItems.addAll(orderItems);
+		orderItems.forEach(orderItem -> orderItem.addOrder(this));
 	}
 
 	public void updateOrderStatus(OrderStatus orderStatus) {
