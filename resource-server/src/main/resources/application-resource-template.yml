@@ -32,6 +32,7 @@ springdoc:
   swagger-ui:
     disable-swagger-default-url: true
     path: /swagger-ui.html
+    config-url: /resource/v3/api-docs/swagger-config
     display-query-params: true
     operationsSorter: alpha
   api-docs:
