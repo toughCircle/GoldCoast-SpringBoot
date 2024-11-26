@@ -12,9 +12,9 @@
 
 ## 📦 기술 스택
 
-- Java, Spring Boot, JPA
-- **데이터베이스**: MariaDB
-- **배포**: Docker, GCP
+- `Java 17`, `Spring Boot`, `JPA`
+- **데이터베이스**: `MariaDB`
+- **배포**: `Docker`, `GCP`
 
 ---
 
@@ -90,7 +90,7 @@ DB 설계를 시각적으로 나타낸 다이어그램입니다.[DB Diagram](ht
 <details>
 <summary>인증 및 토큰 발급 서버</summary>
 
-- **인증 정보**: 사용자 ,`email``password`관리
+- **인증 정보**: 사용자 ,`email`,`password`관리
 - **토큰 발급**: AccessToken과 RefreshToken 발급
 - **JWT를 통한 권한 확인**: 자원서버 에 대한 모든 요청은 JWT 토큰으로 권한 검증
 - **로그인 시퀀스 다이어그램**
@@ -131,30 +131,37 @@ DB 설계를 시각적으로 나타낸 다이어그램입니다.[DB Diagram](ht
 ### 메인 화면
 
 - 상품 목록 출력 (재고 유무로 판매 중/품절 상품 구분)
-
+![image](https://github.com/user-attachments/assets/feb888db-fdef-4cc1-84d5-59cb92e38a89)
+![image](https://github.com/user-attachments/assets/f34e9c05-403d-48eb-86f7-c2a3fe2b8997)
 
 - 회원가입 및 로그인
-
+![image](https://github.com/user-attachments/assets/86d8d517-eb81-42ec-84f9-53abb706e27b)
+![image](https://github.com/user-attachments/assets/f0567e08-40f7-41f7-8e4b-50a787dace31)
 
 - 상품 등록 (사용자가 판매자인 경우 상품 등록 버튼 활성화)
-
+![image](https://github.com/user-attachments/assets/c6ed3fe9-3283-472d-a360-0c31e6c14a4d)
+![image](https://github.com/user-attachments/assets/82386b89-be7a-485c-8cbc-5f2286f047be)
 
 - 상품 구매
-
+![image](https://github.com/user-attachments/assets/e142be1f-50bd-4010-ad04-c8af465ba737)
+![image](https://github.com/user-attachments/assets/37f96a7f-b971-4214-94b7-e6d5ffef2b6d)
+![image](https://github.com/user-attachments/assets/4501c7e7-83ef-4a0c-9a34-9f83b55d0363)
 
 - 마이페이지 (판매자)
-
+![image](https://github.com/user-attachments/assets/b4a212dc-0790-41d8-bf0c-749785c3b408)
 
 - 등록 상품별 주문 내역 조회 (판매자)
-
+![image](https://github.com/user-attachments/assets/393707de-30e0-4643-93e9-0cdf4db8b04a)
 
 - 주문 상태 변경 가능 (판매자)
-
+![image](https://github.com/user-attachments/assets/ec06123d-2624-4546-9872-bd291a292f87)
 
 - 마이페이지 (구매자)
-
+![image](https://github.com/user-attachments/assets/345110e5-d200-405c-a52f-c4dcd363b02e)
 
 - 주문 취소 (주문 완료 상태 외 주문 취소 불가)
+![image](https://github.com/user-attachments/assets/7a7c3746-662a-42e8-a4d1-718808237304)
+![image](https://github.com/user-attachments/assets/6d3ba9f9-8eed-451c-b7d5-aab7ac8805ff)
 
 </details>
 
