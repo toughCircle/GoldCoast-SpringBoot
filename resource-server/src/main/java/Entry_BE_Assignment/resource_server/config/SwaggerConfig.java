@@ -32,7 +32,7 @@ public class SwaggerConfig {
 				.description("Resource Server 관련 API 문서입니다.")
 				.version("1.0"))
 			.servers(Collections.singletonList(
-				new Server().url("http://java.gold-coast.shop/resource")
+				new Server().url("http://java.gold-coast.shop/api")
 					.description("Production Resource Server")
 			))
 			.components(new Components()

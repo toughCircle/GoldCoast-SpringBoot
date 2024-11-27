@@ -32,7 +32,7 @@ public class SwaggerConfig {
 				.description("Auth Server 관련 API 문서입니다.")
 				.version("1.0"))
 			.servers(Collections.singletonList(
-				new Server().url("http://java.gold-coast.shop/auth")
+				new Server().url("http://java.gold-coast.shop/api/auth")
 					.description("Production Auth Server")
 			))
 			.components(new Components()
