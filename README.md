@@ -22,14 +22,14 @@
 
 ### 데이터베이스 다이어그램
 
-DB 설계를 시각적으로 나타낸 다이어그램입니다.[DB Diagram](https://dbdiagram.io/d/66d7f7f6eef7e08f0e9fa844)을 통해 작성된 설계를 확인할 수 있습니다.
+<img width="1137" alt="image" src="https://github.com/user-attachments/assets/04cae456-4082-444f-9ef4-4f207fbe82bf">
+DB 설계를 시각적으로 나타낸 다이어그램입니다.[DB Diagram](https://dbdiagram.io/d/66d7f7f6eef7e08f0e9fa844)
 
 ### API 스펙
 
-**Swagger**를 통해 작성한 API 명세서와**Postman**을 통한 API 요청 예시 링크는 아래와 같습니다.
+**Swagger**를 통해 작성한 API 명세서
 
-- Swagger API 스펙
-- Postman Collection
+- [Swagger API 스펙](http://java.gold-coast.shop/swagger-ui/index.html)
 
 ---
 
