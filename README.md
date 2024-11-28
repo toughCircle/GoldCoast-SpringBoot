@@ -23,7 +23,8 @@
 ### 데이터베이스 다이어그램
 
 <img width="1137" alt="image" src="https://github.com/user-attachments/assets/04cae456-4082-444f-9ef4-4f207fbe82bf">
-DB 설계를 시각적으로 나타낸 다이어그램입니다. 
+DB 설계를 시각적으로 나타낸 다이어그램입니다.
+
 - [DB Diagram](https://dbdiagram.io/d/66d7f7f6eef7e08f0e9fa844)
 
 ### API 스펙
